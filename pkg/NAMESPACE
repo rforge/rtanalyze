@@ -1,0 +1,40 @@
+export(
+	importRTs,
+	batch.fillSubjects,
+	markOutliers,
+	checkSubjects,
+	cormat.test,
+	summarize,
+	aggregate.rtdata,
+	pc,
+	summary.rtdata,
+	quantile.rtdata,
+	npq,
+	bin,
+	concatenate.rtdata,
+	within,
+	sat,
+	plot.sat
+)
+
+exportPattern("^[\\.]")
+
+exportClasses(
+	version,
+	subjects,
+	rtdata,
+	rtsummary,
+)
+
+exportMethods(
+	show,
+	plot,
+	names,
+	aggregate,
+	summary
+)
+
+import(
+	methods,
+	graphics
+)
