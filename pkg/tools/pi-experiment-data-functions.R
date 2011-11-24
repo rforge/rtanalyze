@@ -14,11 +14,19 @@ function(logfile)
 	#read in data	
 	skip=2
 	rawdat = read.table(logfile,skip=skip,sep='\t',header=T,fill=T,stringsAsFactors=F)
-	startline = grep(within.mrk[1],rawdat$Code)[1]		
-	#make rtdataframe
-	rtdata = data.frame(trial=0,RT=0,correct=F,orient='none',lr='none',diff='none',stim_uc=0,resp_uc=0,stringsAsFactors=F)
+	sv = numeric(length(within.mrk[,1]))
+	for(i in 1:length(within.mrk[,1])) {
+		sv[i] = grep(within.mrk[i,1],rawdat$Code)[1]
+	}
+	startline = min(sv)
 	
+	#make rtdataframe
+	rtdata = data.frame(trial=0,RT=0,correct=F,orient='none',lr='none',diff='none',block='none',stim_uc=0,resp_uc=0,stringsAsFactors=F)
 	trial=1
+	block='practice'
+	
+	blockcheck=numeric(0)
+	temptvec=templinevec=numeric(0)
 	#line-by-line analysis
 	for(line in startline:nrow(rawdat)) {
 	
@@ -27,24 +35,40 @@ function(logfile)
 		
 		#get trial type and set conditions (if a stimulus trial)
 		type = grep(rawdat$Code[line],within.mrk[,1])
+		
+		#admissible trialsblockchange
+			cm = matrix(c(90,110,190,210,290,310,390,410,490,510,590,610),,2,byrow=T)
+			ctrial=FALSE
+			for(j in 1:nrow(cm)) {
+				if(trial>cm[j,1] & trial<cm[j,2]) ctrial=TRUE
+			}
+		
+		if(rawdat$Event.Type[line-2]==resp.mrk & rawdat$Event.Type[line-1]==resp.mrk & rawdat$Code[line-1]==3 & ctrial) {
+			blockcheck=c(blockcheck,trial)
+		 	if(block=='practice') block='real' else block='practice'	
+		 }
 	
 		if(length(type)==1) {
 			orient = within.mrk[type,2]
 			lr = within.mrk[type,3]
 			diff = within.mrk[type,4]
-			
+						
 			stim_uc=rawdat$Uncertainty[line]
+
+		temptvec = c(temptvec,within.mrk[type,1])
+		templinevec = c(templinevec,rawdat$Trial[line])
 			
 		
 			#get correct or incorrect response
 			stop=F
 			i=line
 			while(!stop) {
-				if(i>=nrow(rawdat)) stop=T
+				if(i>=(nrow(rawdat)-1)) stop=T
 				if(rawdat$Event.Type[i]==resp.mrk) {
 		 			stop.time=rawdat$Time[i]
 		 			response=rawdat$Code[i]
 		 			resp_uc=rawdat$Uncertainty[i]
+		 			
 		 			stop=T
 		 		} 	
 		 		i=i+1
@@ -62,13 +86,12 @@ function(logfile)
 				RT = stop.time-start.time
 		
 				#add line to rtdata
-				rtdata = rbind(rtdata,c(trial,RT,correct,orient,lr,diff,stim_uc,resp_uc))
+				rtdata = rbind(rtdata,c(trial,RT,correct,orient,lr,diff,block,stim_uc,resp_uc))
 		
 			}
 			trial=trial+1
 		}
 	}
-	
 	
 	
 	#make data.frame and set correct 
@@ -80,9 +103,9 @@ function(logfile)
 	rtdata$orient = as.factor(rtdata$orient)
 	rtdata$lr = as.factor(rtdata$lr)
 	rtdata$diff = as.factor(rtdata$diff)
+	rtdata$block = as.factor(rtdata$block)
 	rtdata$stim_uc = as.numeric(rtdata$stim_uc)
 	rtdata$resp_uc = as.numeric(rtdata$resp_uc)
-	
 	
 	return(rtdata)
 }
@@ -116,7 +139,7 @@ function(dir,newdir=NA,patt='.txt',add='rtdata_',studynum=0)
 		fs= strsplit(file,'\\.')
 		
 		## IQ STUDY 1: 
-		if(studynum==10) rtdata = importRTs(paste(dir,'/',file,sep=''),rtcol='RT',correctcol='correct',correct.answer=TRUE,incorrect.answer=FALSE,ws_conds=c('orient','lr','diff'),ms.correction=.1)
+		if(studynum==10) rtdata = importRTs(paste(dir,'/',file,sep=''),rtcol='RT',correctcol='correct',correct.answer=TRUE,incorrect.answer=FALSE,ws_conds=c('orient','lr','diff','block'),ms.correction=.1,autoblock=99)
 		
 		## IQ STUDY 2:
 		if(studynum==20) rtdata = importRTs(paste(dir,'/',file,sep=''),rtcol='RTcmp',correctcol='correct',correct.answer='correct',incorrect.answer='incorrect',ws_conds=c('condition'),ms.correction=1)

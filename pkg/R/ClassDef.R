@@ -1,6 +1,6 @@
 #############################################
 # RTanalyze S4 CLASS DEFINITIONS			#
-# Copyright(c) 2009 Wouter D. Weeda			#
+# Copyright(c) 2011 Wouter D. Weeda			#
 # University of Amsterdam					#
 #############################################
 

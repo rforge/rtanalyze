@@ -11,7 +11,7 @@
 #checkSubjects
 
 markOutliers <- 
-function(rtdat,method=c('abs','sd','mia-masd'),sdfac=3,rtmin=250,rtmax=2500) 
+function(rtdat,method=c('abs','sd','mia-masd'),sdfac=3,rtmin=250,rtmax=2500,plot=F) 
 #mark outliers based on on absolute values or SD
 {
 	rtvec = .rtdata.rt(rtdat)
@@ -40,6 +40,10 @@ function(rtdat,method=c('abs','sd','mia-masd'),sdfac=3,rtmin=250,rtmax=2500)
 	.rtdata.outlier.method(rtdat) = method
 	.rtdata.outlier.minmax(rtdat) = c(rtmin,rtmax)
 	.rtdata.outlier.percentage(rtdat) = perc
+	
+	if(plot) {
+		cat('plotsie')
+	}
 	
 	return(rtdat)
 }

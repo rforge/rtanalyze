@@ -10,7 +10,7 @@
 #batch.fillSubjects
 
 importRTs <-
-function(filename,rtcol='RTclc',correctcol='correct',correct.answer='correct',incorrect.answer='incorrect',ws_conds=c('condition'),autoblock=30,remove.invalidresponse=T,resp_uclim=c('resp_uc',100),stim_uclim=c('stim_uc',100),ms.correction=.1)
+function(filename,rtcol='RTclc',correctcol='correct',correct.answer='correct',incorrect.answer='incorrect',ws_conds=c('condition'),autoblock=99,remove.invalidresponse=T,resp_uclim=c('resp_uc',100),stim_uclim=c('stim_uc',100),ms.correction=.1)
 {
 	if(!file.exists(filename)) stop('file does not exist.')
 	
@@ -45,7 +45,7 @@ function(filename,rtcol='RTclc',correctcol='correct',correct.answer='correct',in
 		block = rep(seq(1,length(.rtdata.correct(rtdat))/autoblock),each=autoblock)
 		if(length(block)!=length(.rtdata.correct(rtdat))) block = c(block,rep(NA,abs(length(.rtdata.correct(rtdat))-length(block))))
 		.rtdata.conditions(rtdat) = cbind(.rtdata.conditions(rtdat),as.factor(block))
-		names(.rtdata.conditions(rtdat)) = c(ws_conds,'block')
+		names(.rtdata.conditions(rtdat)) = c(ws_conds,'block2')
 	}
 	
 	#create valid vector for stim/resp uc required + add remarks
