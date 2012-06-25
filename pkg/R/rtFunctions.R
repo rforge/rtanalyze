@@ -15,6 +15,8 @@
 #concatenate.rtdata
 #within
 #sat
+#check.agg
+
 
 summarize <-
 function(subject,which.within=numeric(0),FUN,useCorrect=TRUE,template.subject=1) 
@@ -81,7 +83,7 @@ function(rtdat,which=NULL,FUN,useCorrect=TRUE)
 		
 	#check which independents to use
 	if(is.character(which)) which = match(which,names(.rtdata.conditions(rtdat)))
-	conditions = names(.rtdata.conditions(rtdat))[which]
+	
 	
 	#create aggregate (always use correct/incorrect as default)
 	if(useCorrect) {
@@ -91,6 +93,9 @@ function(rtdat,which=NULL,FUN,useCorrect=TRUE)
 		summary.rtdata = aggregate(fulldat,as.list(data.frame(validcond.data[,which])),FUN)
 		names(summary.rtdata) = c(names(.rtdata.conditions(rtdat))[which],'rt')
 	}
+	
+	#match summarydata to full_levels matrix
+	#cmat = makeconditionarray(conditions,.rtdata.condition.levels(rtdat)[which])
 	
 	return(summary.rtdata)
 
@@ -109,6 +114,15 @@ function(rtdat,which=numeric(0),answer=TRUE)
 	#call aggregate on corrects
 	correct = aggregate.rtdata(rtdat,which,length)
 	correct = correct[correct$correct==answer,]
+	
+	#get conditions
+	#if(is.character(which)) which = match(which,names(.rtdata.conditions(rtdat)))
+	#conditions = names(.rtdata.conditions(rtdat))[which]
+	
+	#match summarydata to full_levels matrix
+	#browser()
+	
+	if(length(correct$rt)!=length(total$rt)) stop('Some conditions have no corrects!')
 	
 	#make totals and replace in data.frame
 	nc = correct$rt/total$rt 

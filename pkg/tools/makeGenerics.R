@@ -57,9 +57,9 @@ setAccRepFile <- function(classobject=NULL,funcnames=slotNames(classobject),file
 	}		
 	
 }
-source('/Users/wweeda2/Documents/workspace/RTanalyze/R/ClassDef.R')
-filename='/Users/wweeda2/Documents/workspace/RTanalyze/R/Generics.R'
-methname='/Users/wweeda2/Documents/workspace/RTanalyze/tools/methodnames.txt'
+source('~/Documents/workspace/RTanalyze/R/ClassDef.R')
+filename='~/Documents/workspace/RTanalyze/R/Generics.R'
+methname='~/Documents/workspace/RTanalyze/tools/methodnames.txt'
 packagename = 'swale'
 
 if(file.exists(filename)) file.remove(filename)
@@ -72,8 +72,11 @@ cat('ready\n')
 cat('Writing methodlist to:',methname,'\n')
 setAccRepFile(new('version'),filename=filename,methname=methname,packagename=packagename)
 setAccRepFile(new('subjects'),filename=filename,methname=methname,packagename=packagename)
+setAccRepFile(new('outlier'),filename=filename,methname=methname,packagename=packagename)
 setAccRepFile(new('rtdata'),filename=filename,methname=methname,packagename=packagename)
 setAccRepFile(new('rtsummary'),filename=filename,methname=methname,packagename=packagename)
+setAccRepFile(new('fastdm'),filename=filename,methname=methname,packagename=packagename)
+setAccRepFile(new('fdmoutput'),filename=filename,methname=methname,packagename=packagename)
 
 
 write(')',file=methname,append=T)

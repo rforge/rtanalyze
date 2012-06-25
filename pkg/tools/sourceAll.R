@@ -1,6 +1,6 @@
 #options and WD
 options(warn=1)
-wd='/Users/wweeda2/Documents/workspace/RTanalyze/R/'
+wd='~/Documents/workspace/RTanalyze/R/'
 
 #files to source
 flist=list.files(wd,pattern='.R',full.names=T,ignore=T)

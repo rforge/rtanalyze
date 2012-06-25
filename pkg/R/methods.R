@@ -25,6 +25,10 @@ setMethod('show','rtdata',
 			cat('\n[outliers]:\n')
 			cat(' method   :',object@outlier.method,'\n')
 			cat(' minmax   :',object@outlier.minmax,'\n')
+			#cat(' abs\n')
+			#cat('      tot :',object@outlier.abs$total,'\n')
+			#cat('      low :',object@outlier.abs$lower,'\n')
+			#cat('      hi  :',object@outlier.abs$higher,'\n')
 			cat(' perc/tot :',round(object@outlier.percentage,2),'\n')
 			cat('\n')
 		}

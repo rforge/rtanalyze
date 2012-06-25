@@ -2,6 +2,9 @@ export(
 	importRTs,
 	batch.fillSubjects,
 	markOutliers,
+	markNa,
+	markWarmUp,
+	markPostError,
 	checkSubjects,
 	cormat.test,
 	summarize,
@@ -24,6 +27,9 @@ exportClasses(
 	subjects,
 	rtdata,
 	rtsummary,
+	outliers,
+	fastdm,
+	fdmoutput,
 )
 
 exportMethods(
