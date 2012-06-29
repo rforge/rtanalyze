@@ -18,9 +18,9 @@
 #check.agg
 
 
-summarize <-
-function(subject,which.within=numeric(0),FUN,useCorrect=TRUE,template.subject=1) 
-#summarize rt data on subjects objects (see methods for Generic).
+summarize.subjects <-
+function(subject,which.within=numeric(0),FUN,useCorrect='true',which.between=numeric(0)) 
+#summarize rt data on subjects objects (see methods for Generic), output in long format
 {
 	if(class(subject)!='subjects') stop('works only on \'subjects\' class objects.')
 	
@@ -30,48 +30,50 @@ function(subject,which.within=numeric(0),FUN,useCorrect=TRUE,template.subject=1)
 	#check if PC is called
 	PCcall = which(as.character(match.call()$FUN)=='pc')
 
-	#create namevec
-	if(length(PCcall)>0) {
-		summary.rtdata = pc(.subjects.rtdata(subject)[[whichsubjects[template.subject]]],which.within,TRUE)
-	} else summary.rtdata = aggregate.rtdata(.subjects.rtdata(subject)[[whichsubjects[template.subject]]],which.within,FUN,useCorrect=useCorrect)
+	#make data.frame
+	summary.subject = numeric(0)
 	
-	variables = character(nrow(summary.rtdata))
-	for(row in 1:nrow(summary.rtdata)) {
-		varname = as.character(match.call()$FUN)
-		if(ncol(summary.rtdata)>1) {
-			for(col in 1:(ncol(summary.rtdata)-1)) {
-				varname = c(varname,as.character(summary.rtdata[row,col]))
-			}
-		}
-		variables[row] = paste(varname,collapse='_')
-	}
-	
-	#create named dataframe
-	x = data.frame(matrix(NA,length(whichsubjects),length(variables)))
-	colnames(x) = variables
-	
-	#fill in rows (subjects) give NA if not all conditions are filled
-	for(sub in 1:length(whichsubjects)) {
+	#make aggregates for all subjects
+	for(i in 1:length(whichsubjects)) {
+		
 		if(length(PCcall)>0) {
-			dat = pc(.subjects.rtdata(subject)[[whichsubjects[sub]]],which.within,TRUE)$pc
-		} else dat = aggregate.rtdata(.subjects.rtdata(subject)[[whichsubjects[sub]]],which.within,FUN,useCorrect=useCorrect)$rt
-		if(length(dat)!=length(variables)) dat = rep(NA,length(variables))
-		x[sub,]= dat
+			summary.rtdata = pc(.subjects.rtdata(subject)[[whichsubjects[i]]],which.within,TRUE)
+		} else {
+			summary.rtdata = aggregate.rtdata(.subjects.rtdata(subject)[[whichsubjects[i]]],which.within,FUN,useCorrect=useCorrect)
+		}
+		
+		#get subject variables
+		sdat = matrix(.subjects.variables(subject.data.switch)[whichsubjects[i],],nrow=nrow(summary.rtdata),ncol=length(.subjects.variables(subject.data.switch)[whichsubjects[i],]),byrow=T)
+		#add value
+		sdat = cbind(sdat,summary.rtdata)
+		summary.subject = rbind(summary.subject,sdat)
+		
 	}
 	
-	#bind conditions and summaries
-	summary.subject = cbind(.subjects.variables(subject)[.subjects.valid(subject),],x)
-
+	#reset between subject variables as factors
+	for(col in 1:ncol(.subjects.variables(subject.data.switch))) {
+		summary.subject[,col] = as.factor(unlist(summary.subject[,col]))
+	}
+	
+	#set new names
+	newname = c(names(.subjects.variables(subject.data.switch)),names(summary.rtdata))
+	newname[length(newname)] = as.character(match.call()$FUN)
+	names(summary.subject) = newname
+	
+	
+	
 	return(summary.subject)
 	
 }
 
 aggregate.rtdata <-
-function(rtdat,which=NULL,FUN,useCorrect=TRUE) 
+function(rtdat,which=NULL,FUN,useCorrect=c('both','true','false','none')) 
 #wrapper for aggregate called on rtdata objects (see methods for Generic).
 {
 	if(class(rtdat)!='rtdata') stop('works only on \'rtdata\' class objects.')
 	if(missing(which)) which=numeric(0)
+	
+	useCorrect = match.arg(useCorrect,c('both','true','false','none'))
 	
 	#create data.frame for VALID conditions and corrects	
 	validcond.data = .rtdata.conditions(rtdat)[.rtdata.valid(rtdat),] 
@@ -84,19 +86,27 @@ function(rtdat,which=NULL,FUN,useCorrect=TRUE)
 	#check which independents to use
 	if(is.character(which)) which = match(which,names(.rtdata.conditions(rtdat)))
 	
-	
-	#create aggregate (always use correct/incorrect as default)
-	if(useCorrect) {
+	#create aggregate (always use correct/incorrect as default, else use either or none)
+	if(useCorrect=='both') {
 		summary.rtdata = aggregate(fulldat,as.list(data.frame(validcond.data[,which],correct)),FUN) 
 		names(summary.rtdata) = c(names(.rtdata.conditions(rtdat))[which],'correct','rt')
-	} else {
-		summary.rtdata = aggregate(fulldat,as.list(data.frame(validcond.data[,which])),FUN)
+	} 
+	if(useCorrect=='true') {
+		summary.rtdata = aggregate(fulldat[which(correct==TRUE)],as.list(data.frame(validcond.data[which(correct==TRUE),which])),FUN)
+		summary.rtdata = cbind(data.frame(summary.rtdata[,-which(names(summary.rtdata)=='x')]),data.frame(rep(TRUE,nrow(summary.rtdata))),data.frame(summary.rtdata[,which(names(summary.rtdata)=='x')]))
+		names(summary.rtdata) = c(names(.rtdata.conditions(rtdat))[which],'correct','rt')
+	} 
+	if(useCorrect=='false') {
+		summary.rtdata = aggregate(fulldat[which(correct==FALSE)],as.list(data.frame(validcond.data[which(correct==FALSE),which])),FUN)
+		summary.rtdata = cbind(data.frame(summary.rtdata[,-which(names(summary.rtdata)=='x')]),data.frame(rep(FALSE,nrow(summary.rtdata))),data.frame(summary.rtdata[,which(names(summary.rtdata)=='x')]))
+		names(summary.rtdata) = c(names(.rtdata.conditions(rtdat))[which],'correct','rt')
+	} 
+	if(useCorrect=='none') {
+		summary.rtdata = aggregate(fulldat,as.list(data.frame(validcond.data[,which])),FUN) 
 		names(summary.rtdata) = c(names(.rtdata.conditions(rtdat))[which],'rt')
-	}
+	} 
 	
-	#match summarydata to full_levels matrix
-	#cmat = makeconditionarray(conditions,.rtdata.condition.levels(rtdat)[which])
-	
+	#return aggregate
 	return(summary.rtdata)
 
 }
@@ -108,29 +118,52 @@ function(rtdat,which=numeric(0),answer=TRUE)
 	
 	if(class(rtdat)!='rtdata') stop('pc() works only on \'rtdata\' class objects.')
 
-	#call aggregate on totals
-	total = aggregate.rtdata(rtdat,which,length,useCorrect=FALSE)
+	#call aggregate 
+	total = aggregate.rtdata(rtdat,which,length)
 	
-	#call aggregate on corrects
-	correct = aggregate.rtdata(rtdat,which,length)
-	correct = correct[correct$correct==answer,]
+	errors = total[total$correct==FALSE,]
+	correct = total[total$correct==TRUE,]
 	
-	#get conditions
-	#if(is.character(which)) which = match(which,names(.rtdata.conditions(rtdat)))
-	#conditions = names(.rtdata.conditions(rtdat))[which]
+	#match matrix
+	cmat = apply(total[,-which(names(total)=='correct' | names(total)=='rt')],1,function(x) paste(x,collapse=''))
 	
-	#match summarydata to full_levels matrix
-	#browser()
+	#select rows in matchmatrix with longest	
+	if(nrow(errors)<=nrow(correct)) {
+		rownums = which(total$correct==TRUE)
+		werr = FALSE
+	} else {
+		rownums = which(total$correct==FALSE)
+		werr = TRUE
+	}
 	
-	if(length(correct$rt)!=length(total$rt)) stop('Some conditions have no corrects!')
+	#try and match rows of correct and incorrects
+	pcrt = numeric(length(rownums))
 	
-	#make totals and replace in data.frame
-	nc = correct$rt/total$rt 
+	for(row in 1:length(rownums)) 
+	{
+		m = which(cmat==cmat[rownums[row]])
+				
+		#if match is found
+		if(length(m)==2) {
+			#select if 1 or 2 is number corrects
+			pcrt[row] = (total$rt[m[2]]) / (total$rt[m[2]]+total$rt[m[1]])   	
+		} else {
+			#no match
+			#determine which is missing correct or incorrect and set to zero
+			if(werr) pcrt[row] = 0 else pcrt[row] = 1 
+		}
+	}
 	
-	total[,ncol(total)] = nc
-	names(total)[ncol(total)]='pc'
+	#select the appropriate outframe (based on longest matchmatrix)
+	if(werr) outframe = errors else outframe = correct
 	
-	return(total)
+	#pretty up the dataframe
+	outframe = outframe[,-which(names(outframe)=='correct')]
+	outframe$rt = pcrt
+	names(outframe)[ncol(outframe)]='pc'
+	row.names(outframe) = 1:nrow(outframe)
+	
+	return(outframe)
 	
 }
 
@@ -165,10 +198,12 @@ function(rtdat,which=numeric(0),pc=FALSE)
 
 
 quantile.rtdata <-
-function(rtdat,which=numeric(0),quantiles=c(.1,.3,.5,.7,.9),useCorrect=TRUE,onlyQs=FALSE)
+function(rtdat,which=numeric(0),quantiles=c(.1,.3,.5,.7,.9),useCorrect='both',onlyQs=FALSE)
 {
 	if(class(rtdat)!='rtdata') stop('quantile.rtdata() works only on \'rtdata\' class objects.')
 
+	
+	
 	#define mean and quantdata
 	meandata = aggregate.rtdata(rtdat,which,length,useCorrect=useCorrect)
 	quant.data = n.quant.data = matrix(NA,nrow(meandata),length(quantiles))
@@ -316,5 +351,4 @@ function(rtdata,quants=c(.1,.3,.5,.7,.9),ylim=c(.5,1))
 	
 	
 }
-
 

@@ -8,6 +8,7 @@
 
 #CONTAINS
 #checkSubjects
+#longform
 
 checkSubjects <-
 function(subjects,min.n=10)
@@ -15,9 +16,16 @@ function(subjects,min.n=10)
 {
 	if(class(subjects)!='subjects') stop('input must be of class \'subjects\'')
 	
-	
 	for(rtdat in 1:length(.subjects.rtdata(subjects))) 	if(length(which(.rtdata.valid(.subjects.rtdata(subjects)[[rtdat]])==TRUE))<10) .subjects.valid(subjects)[rtdat]=FALSE
 			
 	return(subjects)
 	
 }
+
+export.rt <- function() 
+#put all RT's in longform (for SPSS export)
+{
+cat('still defunct\n')	
+	
+}
+
