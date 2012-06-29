@@ -25,10 +25,9 @@ exportPattern("^[\\.]")
 exportClasses(
 	version,
 	subjects,
-	rtdata,
 	outlier,
+	rtdata,
 	rtsummary,
-	outliers,
 	fastdm,
 	fdmoutput,
 )
