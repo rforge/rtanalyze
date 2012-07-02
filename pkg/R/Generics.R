@@ -2,7 +2,7 @@ classname <-'version'
 funcname <-'.version.version'
 standGen <- function(object) standardGeneric('.version.version')
 standMethod <- function(object) object@version
-setGeneric(funcname,standGen,package='swale')
+setGeneric(funcname,standGen,package='rtanalyze')
 setMethod(funcname,classname,standMethod)
 slotreplace <-'.version.version<-'
 standGen <- function(x, value) standardGeneric('.version.version<-')
@@ -13,7 +13,7 @@ classname <-'version'
 funcname <-'.version.build'
 standGen <- function(object) standardGeneric('.version.build')
 standMethod <- function(object) object@build
-setGeneric(funcname,standGen,package='swale')
+setGeneric(funcname,standGen,package='rtanalyze')
 setMethod(funcname,classname,standMethod)
 slotreplace <-'.version.build<-'
 standGen <- function(x, value) standardGeneric('.version.build<-')
@@ -24,7 +24,7 @@ classname <-'version'
 funcname <-'.version.update'
 standGen <- function(object) standardGeneric('.version.update')
 standMethod <- function(object) object@update
-setGeneric(funcname,standGen,package='swale')
+setGeneric(funcname,standGen,package='rtanalyze')
 setMethod(funcname,classname,standMethod)
 slotreplace <-'.version.update<-'
 standGen <- function(x, value) standardGeneric('.version.update<-')
@@ -35,7 +35,7 @@ classname <-'version'
 funcname <-'.version.svnrev'
 standGen <- function(object) standardGeneric('.version.svnrev')
 standMethod <- function(object) object@svnrev
-setGeneric(funcname,standGen,package='swale')
+setGeneric(funcname,standGen,package='rtanalyze')
 setMethod(funcname,classname,standMethod)
 slotreplace <-'.version.svnrev<-'
 standGen <- function(x, value) standardGeneric('.version.svnrev<-')
@@ -46,7 +46,7 @@ classname <-'subjects'
 funcname <-'.subjects.experimentname'
 standGen <- function(object) standardGeneric('.subjects.experimentname')
 standMethod <- function(object) object@experimentname
-setGeneric(funcname,standGen,package='swale')
+setGeneric(funcname,standGen,package='rtanalyze')
 setMethod(funcname,classname,standMethod)
 slotreplace <-'.subjects.experimentname<-'
 standGen <- function(x, value) standardGeneric('.subjects.experimentname<-')
@@ -57,7 +57,7 @@ classname <-'subjects'
 funcname <-'.subjects.variables'
 standGen <- function(object) standardGeneric('.subjects.variables')
 standMethod <- function(object) object@variables
-setGeneric(funcname,standGen,package='swale')
+setGeneric(funcname,standGen,package='rtanalyze')
 setMethod(funcname,classname,standMethod)
 slotreplace <-'.subjects.variables<-'
 standGen <- function(x, value) standardGeneric('.subjects.variables<-')
@@ -68,7 +68,7 @@ classname <-'subjects'
 funcname <-'.subjects.variable.levels'
 standGen <- function(object) standardGeneric('.subjects.variable.levels')
 standMethod <- function(object) object@variable.levels
-setGeneric(funcname,standGen,package='swale')
+setGeneric(funcname,standGen,package='rtanalyze')
 setMethod(funcname,classname,standMethod)
 slotreplace <-'.subjects.variable.levels<-'
 standGen <- function(x, value) standardGeneric('.subjects.variable.levels<-')
@@ -79,7 +79,7 @@ classname <-'subjects'
 funcname <-'.subjects.rtdata'
 standGen <- function(object) standardGeneric('.subjects.rtdata')
 standMethod <- function(object) object@rtdata
-setGeneric(funcname,standGen,package='swale')
+setGeneric(funcname,standGen,package='rtanalyze')
 setMethod(funcname,classname,standMethod)
 slotreplace <-'.subjects.rtdata<-'
 standGen <- function(x, value) standardGeneric('.subjects.rtdata<-')
@@ -90,7 +90,7 @@ classname <-'subjects'
 funcname <-'.subjects.valid'
 standGen <- function(object) standardGeneric('.subjects.valid')
 standMethod <- function(object) object@valid
-setGeneric(funcname,standGen,package='swale')
+setGeneric(funcname,standGen,package='rtanalyze')
 setMethod(funcname,classname,standMethod)
 slotreplace <-'.subjects.valid<-'
 standGen <- function(x, value) standardGeneric('.subjects.valid<-')
@@ -98,10 +98,21 @@ standMethod <- function(x, value) {x@valid<- value;x}
 setGeneric(slotreplace,standGen)
 setReplaceMethod(funcname,classname,standMethod)
 classname <-'subjects'
+funcname <-'.subjects.outliers'
+standGen <- function(object) standardGeneric('.subjects.outliers')
+standMethod <- function(object) object@outliers
+setGeneric(funcname,standGen,package='rtanalyze')
+setMethod(funcname,classname,standMethod)
+slotreplace <-'.subjects.outliers<-'
+standGen <- function(x, value) standardGeneric('.subjects.outliers<-')
+standMethod <- function(x, value) {x@outliers<- value;x}
+setGeneric(slotreplace,standGen)
+setReplaceMethod(funcname,classname,standMethod)
+classname <-'subjects'
 funcname <-'.subjects.remarks'
 standGen <- function(object) standardGeneric('.subjects.remarks')
 standMethod <- function(object) object@remarks
-setGeneric(funcname,standGen,package='swale')
+setGeneric(funcname,standGen,package='rtanalyze')
 setMethod(funcname,classname,standMethod)
 slotreplace <-'.subjects.remarks<-'
 standGen <- function(x, value) standardGeneric('.subjects.remarks<-')
@@ -112,7 +123,7 @@ classname <-'subjects'
 funcname <-'.subjects.version'
 standGen <- function(object) standardGeneric('.subjects.version')
 standMethod <- function(object) object@version
-setGeneric(funcname,standGen,package='swale')
+setGeneric(funcname,standGen,package='rtanalyze')
 setMethod(funcname,classname,standMethod)
 slotreplace <-'.subjects.version<-'
 standGen <- function(x, value) standardGeneric('.subjects.version<-')
@@ -123,7 +134,7 @@ classname <-'outlier'
 funcname <-'.outlier.type'
 standGen <- function(object) standardGeneric('.outlier.type')
 standMethod <- function(object) object@type
-setGeneric(funcname,standGen,package='swale')
+setGeneric(funcname,standGen,package='rtanalyze')
 setMethod(funcname,classname,standMethod)
 slotreplace <-'.outlier.type<-'
 standGen <- function(x, value) standardGeneric('.outlier.type<-')
@@ -134,7 +145,7 @@ classname <-'outlier'
 funcname <-'.outlier.method'
 standGen <- function(object) standardGeneric('.outlier.method')
 standMethod <- function(object) object@method
-setGeneric(funcname,standGen,package='swale')
+setGeneric(funcname,standGen,package='rtanalyze')
 setMethod(funcname,classname,standMethod)
 slotreplace <-'.outlier.method<-'
 standGen <- function(x, value) standardGeneric('.outlier.method<-')
@@ -145,7 +156,7 @@ classname <-'outlier'
 funcname <-'.outlier.minmax'
 standGen <- function(object) standardGeneric('.outlier.minmax')
 standMethod <- function(object) object@minmax
-setGeneric(funcname,standGen,package='swale')
+setGeneric(funcname,standGen,package='rtanalyze')
 setMethod(funcname,classname,standMethod)
 slotreplace <-'.outlier.minmax<-'
 standGen <- function(x, value) standardGeneric('.outlier.minmax<-')
@@ -156,7 +167,7 @@ classname <-'outlier'
 funcname <-'.outlier.pre.total'
 standGen <- function(object) standardGeneric('.outlier.pre.total')
 standMethod <- function(object) object@pre.total
-setGeneric(funcname,standGen,package='swale')
+setGeneric(funcname,standGen,package='rtanalyze')
 setMethod(funcname,classname,standMethod)
 slotreplace <-'.outlier.pre.total<-'
 standGen <- function(x, value) standardGeneric('.outlier.pre.total<-')
@@ -167,7 +178,7 @@ classname <-'outlier'
 funcname <-'.outlier.rem.total'
 standGen <- function(object) standardGeneric('.outlier.rem.total')
 standMethod <- function(object) object@rem.total
-setGeneric(funcname,standGen,package='swale')
+setGeneric(funcname,standGen,package='rtanalyze')
 setMethod(funcname,classname,standMethod)
 slotreplace <-'.outlier.rem.total<-'
 standGen <- function(x, value) standardGeneric('.outlier.rem.total<-')
@@ -178,7 +189,7 @@ classname <-'outlier'
 funcname <-'.outlier.rem.low'
 standGen <- function(object) standardGeneric('.outlier.rem.low')
 standMethod <- function(object) object@rem.low
-setGeneric(funcname,standGen,package='swale')
+setGeneric(funcname,standGen,package='rtanalyze')
 setMethod(funcname,classname,standMethod)
 slotreplace <-'.outlier.rem.low<-'
 standGen <- function(x, value) standardGeneric('.outlier.rem.low<-')
@@ -189,7 +200,7 @@ classname <-'outlier'
 funcname <-'.outlier.rem.high'
 standGen <- function(object) standardGeneric('.outlier.rem.high')
 standMethod <- function(object) object@rem.high
-setGeneric(funcname,standGen,package='swale')
+setGeneric(funcname,standGen,package='rtanalyze')
 setMethod(funcname,classname,standMethod)
 slotreplace <-'.outlier.rem.high<-'
 standGen <- function(x, value) standardGeneric('.outlier.rem.high<-')
@@ -200,7 +211,7 @@ classname <-'outlier'
 funcname <-'.outlier.rem.prop'
 standGen <- function(object) standardGeneric('.outlier.rem.prop')
 standMethod <- function(object) object@rem.prop
-setGeneric(funcname,standGen,package='swale')
+setGeneric(funcname,standGen,package='rtanalyze')
 setMethod(funcname,classname,standMethod)
 slotreplace <-'.outlier.rem.prop<-'
 standGen <- function(x, value) standardGeneric('.outlier.rem.prop<-')
@@ -211,7 +222,7 @@ classname <-'outlier'
 funcname <-'.outlier.post.total'
 standGen <- function(object) standardGeneric('.outlier.post.total')
 standMethod <- function(object) object@post.total
-setGeneric(funcname,standGen,package='swale')
+setGeneric(funcname,standGen,package='rtanalyze')
 setMethod(funcname,classname,standMethod)
 slotreplace <-'.outlier.post.total<-'
 standGen <- function(x, value) standardGeneric('.outlier.post.total<-')
@@ -219,10 +230,21 @@ standMethod <- function(x, value) {x@post.total<- value;x}
 setGeneric(slotreplace,standGen)
 setReplaceMethod(funcname,classname,standMethod)
 classname <-'outlier'
+funcname <-'.outlier.marked.values'
+standGen <- function(object) standardGeneric('.outlier.marked.values')
+standMethod <- function(object) object@marked.values
+setGeneric(funcname,standGen,package='rtanalyze')
+setMethod(funcname,classname,standMethod)
+slotreplace <-'.outlier.marked.values<-'
+standGen <- function(x, value) standardGeneric('.outlier.marked.values<-')
+standMethod <- function(x, value) {x@marked.values<- value;x}
+setGeneric(slotreplace,standGen)
+setReplaceMethod(funcname,classname,standMethod)
+classname <-'outlier'
 funcname <-'.outlier.remark'
 standGen <- function(object) standardGeneric('.outlier.remark')
 standMethod <- function(object) object@remark
-setGeneric(funcname,standGen,package='swale')
+setGeneric(funcname,standGen,package='rtanalyze')
 setMethod(funcname,classname,standMethod)
 slotreplace <-'.outlier.remark<-'
 standGen <- function(x, value) standardGeneric('.outlier.remark<-')
@@ -233,10 +255,120 @@ classname <-'outlier'
 funcname <-'.outlier.version'
 standGen <- function(object) standardGeneric('.outlier.version')
 standMethod <- function(object) object@version
-setGeneric(funcname,standGen,package='swale')
+setGeneric(funcname,standGen,package='rtanalyze')
 setMethod(funcname,classname,standMethod)
 slotreplace <-'.outlier.version<-'
 standGen <- function(x, value) standardGeneric('.outlier.version<-')
+standMethod <- function(x, value) {x@version<- value;x}
+setGeneric(slotreplace,standGen)
+setReplaceMethod(funcname,classname,standMethod)
+classname <-'subjectoutlier'
+funcname <-'.subjectoutlier.FUN'
+standGen <- function(object) standardGeneric('.subjectoutlier.FUN')
+standMethod <- function(object) object@FUN
+setGeneric(funcname,standGen,package='rtanalyze')
+setMethod(funcname,classname,standMethod)
+slotreplace <-'.subjectoutlier.FUN<-'
+standGen <- function(x, value) standardGeneric('.subjectoutlier.FUN<-')
+standMethod <- function(x, value) {x@FUN<- value;x}
+setGeneric(slotreplace,standGen)
+setReplaceMethod(funcname,classname,standMethod)
+classname <-'subjectoutlier'
+funcname <-'.subjectoutlier.which'
+standGen <- function(object) standardGeneric('.subjectoutlier.which')
+standMethod <- function(object) object@which
+setGeneric(funcname,standGen,package='rtanalyze')
+setMethod(funcname,classname,standMethod)
+slotreplace <-'.subjectoutlier.which<-'
+standGen <- function(x, value) standardGeneric('.subjectoutlier.which<-')
+standMethod <- function(x, value) {x@which<- value;x}
+setGeneric(slotreplace,standGen)
+setReplaceMethod(funcname,classname,standMethod)
+classname <-'subjectoutlier'
+funcname <-'.subjectoutlier.criteria'
+standGen <- function(object) standardGeneric('.subjectoutlier.criteria')
+standMethod <- function(object) object@criteria
+setGeneric(funcname,standGen,package='rtanalyze')
+setMethod(funcname,classname,standMethod)
+slotreplace <-'.subjectoutlier.criteria<-'
+standGen <- function(x, value) standardGeneric('.subjectoutlier.criteria<-')
+standMethod <- function(x, value) {x@criteria<- value;x}
+setGeneric(slotreplace,standGen)
+setReplaceMethod(funcname,classname,standMethod)
+classname <-'subjectoutlier'
+funcname <-'.subjectoutlier.pre.total'
+standGen <- function(object) standardGeneric('.subjectoutlier.pre.total')
+standMethod <- function(object) object@pre.total
+setGeneric(funcname,standGen,package='rtanalyze')
+setMethod(funcname,classname,standMethod)
+slotreplace <-'.subjectoutlier.pre.total<-'
+standGen <- function(x, value) standardGeneric('.subjectoutlier.pre.total<-')
+standMethod <- function(x, value) {x@pre.total<- value;x}
+setGeneric(slotreplace,standGen)
+setReplaceMethod(funcname,classname,standMethod)
+classname <-'subjectoutlier'
+funcname <-'.subjectoutlier.rem.total'
+standGen <- function(object) standardGeneric('.subjectoutlier.rem.total')
+standMethod <- function(object) object@rem.total
+setGeneric(funcname,standGen,package='rtanalyze')
+setMethod(funcname,classname,standMethod)
+slotreplace <-'.subjectoutlier.rem.total<-'
+standGen <- function(x, value) standardGeneric('.subjectoutlier.rem.total<-')
+standMethod <- function(x, value) {x@rem.total<- value;x}
+setGeneric(slotreplace,standGen)
+setReplaceMethod(funcname,classname,standMethod)
+classname <-'subjectoutlier'
+funcname <-'.subjectoutlier.post.total'
+standGen <- function(object) standardGeneric('.subjectoutlier.post.total')
+standMethod <- function(object) object@post.total
+setGeneric(funcname,standGen,package='rtanalyze')
+setMethod(funcname,classname,standMethod)
+slotreplace <-'.subjectoutlier.post.total<-'
+standGen <- function(x, value) standardGeneric('.subjectoutlier.post.total<-')
+standMethod <- function(x, value) {x@post.total<- value;x}
+setGeneric(slotreplace,standGen)
+setReplaceMethod(funcname,classname,standMethod)
+classname <-'subjectoutlier'
+funcname <-'.subjectoutlier.rem.prop'
+standGen <- function(object) standardGeneric('.subjectoutlier.rem.prop')
+standMethod <- function(object) object@rem.prop
+setGeneric(funcname,standGen,package='rtanalyze')
+setMethod(funcname,classname,standMethod)
+slotreplace <-'.subjectoutlier.rem.prop<-'
+standGen <- function(x, value) standardGeneric('.subjectoutlier.rem.prop<-')
+standMethod <- function(x, value) {x@rem.prop<- value;x}
+setGeneric(slotreplace,standGen)
+setReplaceMethod(funcname,classname,standMethod)
+classname <-'subjectoutlier'
+funcname <-'.subjectoutlier.marked.values'
+standGen <- function(object) standardGeneric('.subjectoutlier.marked.values')
+standMethod <- function(object) object@marked.values
+setGeneric(funcname,standGen,package='rtanalyze')
+setMethod(funcname,classname,standMethod)
+slotreplace <-'.subjectoutlier.marked.values<-'
+standGen <- function(x, value) standardGeneric('.subjectoutlier.marked.values<-')
+standMethod <- function(x, value) {x@marked.values<- value;x}
+setGeneric(slotreplace,standGen)
+setReplaceMethod(funcname,classname,standMethod)
+classname <-'subjectoutlier'
+funcname <-'.subjectoutlier.remark'
+standGen <- function(object) standardGeneric('.subjectoutlier.remark')
+standMethod <- function(object) object@remark
+setGeneric(funcname,standGen,package='rtanalyze')
+setMethod(funcname,classname,standMethod)
+slotreplace <-'.subjectoutlier.remark<-'
+standGen <- function(x, value) standardGeneric('.subjectoutlier.remark<-')
+standMethod <- function(x, value) {x@remark<- value;x}
+setGeneric(slotreplace,standGen)
+setReplaceMethod(funcname,classname,standMethod)
+classname <-'subjectoutlier'
+funcname <-'.subjectoutlier.version'
+standGen <- function(object) standardGeneric('.subjectoutlier.version')
+standMethod <- function(object) object@version
+setGeneric(funcname,standGen,package='rtanalyze')
+setMethod(funcname,classname,standMethod)
+slotreplace <-'.subjectoutlier.version<-'
+standGen <- function(x, value) standardGeneric('.subjectoutlier.version<-')
 standMethod <- function(x, value) {x@version<- value;x}
 setGeneric(slotreplace,standGen)
 setReplaceMethod(funcname,classname,standMethod)
@@ -244,7 +376,7 @@ classname <-'rtdata'
 funcname <-'.rtdata.rt'
 standGen <- function(object) standardGeneric('.rtdata.rt')
 standMethod <- function(object) object@rt
-setGeneric(funcname,standGen,package='swale')
+setGeneric(funcname,standGen,package='rtanalyze')
 setMethod(funcname,classname,standMethod)
 slotreplace <-'.rtdata.rt<-'
 standGen <- function(x, value) standardGeneric('.rtdata.rt<-')
@@ -255,7 +387,7 @@ classname <-'rtdata'
 funcname <-'.rtdata.correct'
 standGen <- function(object) standardGeneric('.rtdata.correct')
 standMethod <- function(object) object@correct
-setGeneric(funcname,standGen,package='swale')
+setGeneric(funcname,standGen,package='rtanalyze')
 setMethod(funcname,classname,standMethod)
 slotreplace <-'.rtdata.correct<-'
 standGen <- function(x, value) standardGeneric('.rtdata.correct<-')
@@ -266,7 +398,7 @@ classname <-'rtdata'
 funcname <-'.rtdata.valid'
 standGen <- function(object) standardGeneric('.rtdata.valid')
 standMethod <- function(object) object@valid
-setGeneric(funcname,standGen,package='swale')
+setGeneric(funcname,standGen,package='rtanalyze')
 setMethod(funcname,classname,standMethod)
 slotreplace <-'.rtdata.valid<-'
 standGen <- function(x, value) standardGeneric('.rtdata.valid<-')
@@ -277,7 +409,7 @@ classname <-'rtdata'
 funcname <-'.rtdata.conditions'
 standGen <- function(object) standardGeneric('.rtdata.conditions')
 standMethod <- function(object) object@conditions
-setGeneric(funcname,standGen,package='swale')
+setGeneric(funcname,standGen,package='rtanalyze')
 setMethod(funcname,classname,standMethod)
 slotreplace <-'.rtdata.conditions<-'
 standGen <- function(x, value) standardGeneric('.rtdata.conditions<-')
@@ -288,7 +420,7 @@ classname <-'rtdata'
 funcname <-'.rtdata.condition.levels'
 standGen <- function(object) standardGeneric('.rtdata.condition.levels')
 standMethod <- function(object) object@condition.levels
-setGeneric(funcname,standGen,package='swale')
+setGeneric(funcname,standGen,package='rtanalyze')
 setMethod(funcname,classname,standMethod)
 slotreplace <-'.rtdata.condition.levels<-'
 standGen <- function(x, value) standardGeneric('.rtdata.condition.levels<-')
@@ -299,7 +431,7 @@ classname <-'rtdata'
 funcname <-'.rtdata.remarks'
 standGen <- function(object) standardGeneric('.rtdata.remarks')
 standMethod <- function(object) object@remarks
-setGeneric(funcname,standGen,package='swale')
+setGeneric(funcname,standGen,package='rtanalyze')
 setMethod(funcname,classname,standMethod)
 slotreplace <-'.rtdata.remarks<-'
 standGen <- function(x, value) standardGeneric('.rtdata.remarks<-')
@@ -310,7 +442,7 @@ classname <-'rtdata'
 funcname <-'.rtdata.outlier.method'
 standGen <- function(object) standardGeneric('.rtdata.outlier.method')
 standMethod <- function(object) object@outlier.method
-setGeneric(funcname,standGen,package='swale')
+setGeneric(funcname,standGen,package='rtanalyze')
 setMethod(funcname,classname,standMethod)
 slotreplace <-'.rtdata.outlier.method<-'
 standGen <- function(x, value) standardGeneric('.rtdata.outlier.method<-')
@@ -321,7 +453,7 @@ classname <-'rtdata'
 funcname <-'.rtdata.outlier.minmax'
 standGen <- function(object) standardGeneric('.rtdata.outlier.minmax')
 standMethod <- function(object) object@outlier.minmax
-setGeneric(funcname,standGen,package='swale')
+setGeneric(funcname,standGen,package='rtanalyze')
 setMethod(funcname,classname,standMethod)
 slotreplace <-'.rtdata.outlier.minmax<-'
 standGen <- function(x, value) standardGeneric('.rtdata.outlier.minmax<-')
@@ -332,7 +464,7 @@ classname <-'rtdata'
 funcname <-'.rtdata.outlier.percentage'
 standGen <- function(object) standardGeneric('.rtdata.outlier.percentage')
 standMethod <- function(object) object@outlier.percentage
-setGeneric(funcname,standGen,package='swale')
+setGeneric(funcname,standGen,package='rtanalyze')
 setMethod(funcname,classname,standMethod)
 slotreplace <-'.rtdata.outlier.percentage<-'
 standGen <- function(x, value) standardGeneric('.rtdata.outlier.percentage<-')
@@ -343,7 +475,7 @@ classname <-'rtdata'
 funcname <-'.rtdata.outliers'
 standGen <- function(object) standardGeneric('.rtdata.outliers')
 standMethod <- function(object) object@outliers
-setGeneric(funcname,standGen,package='swale')
+setGeneric(funcname,standGen,package='rtanalyze')
 setMethod(funcname,classname,standMethod)
 slotreplace <-'.rtdata.outliers<-'
 standGen <- function(x, value) standardGeneric('.rtdata.outliers<-')
@@ -354,7 +486,7 @@ classname <-'rtdata'
 funcname <-'.rtdata.summary'
 standGen <- function(object) standardGeneric('.rtdata.summary')
 standMethod <- function(object) object@summary
-setGeneric(funcname,standGen,package='swale')
+setGeneric(funcname,standGen,package='rtanalyze')
 setMethod(funcname,classname,standMethod)
 slotreplace <-'.rtdata.summary<-'
 standGen <- function(x, value) standardGeneric('.rtdata.summary<-')
@@ -365,7 +497,7 @@ classname <-'rtdata'
 funcname <-'.rtdata.version'
 standGen <- function(object) standardGeneric('.rtdata.version')
 standMethod <- function(object) object@version
-setGeneric(funcname,standGen,package='swale')
+setGeneric(funcname,standGen,package='rtanalyze')
 setMethod(funcname,classname,standMethod)
 slotreplace <-'.rtdata.version<-'
 standGen <- function(x, value) standardGeneric('.rtdata.version<-')
@@ -376,7 +508,7 @@ classname <-'rtsummary'
 funcname <-'.rtsummary.quantiles'
 standGen <- function(object) standardGeneric('.rtsummary.quantiles')
 standMethod <- function(object) object@quantiles
-setGeneric(funcname,standGen,package='swale')
+setGeneric(funcname,standGen,package='rtanalyze')
 setMethod(funcname,classname,standMethod)
 slotreplace <-'.rtsummary.quantiles<-'
 standGen <- function(x, value) standardGeneric('.rtsummary.quantiles<-')
@@ -387,7 +519,7 @@ classname <-'rtsummary'
 funcname <-'.rtsummary.meanRT'
 standGen <- function(object) standardGeneric('.rtsummary.meanRT')
 standMethod <- function(object) object@meanRT
-setGeneric(funcname,standGen,package='swale')
+setGeneric(funcname,standGen,package='rtanalyze')
 setMethod(funcname,classname,standMethod)
 slotreplace <-'.rtsummary.meanRT<-'
 standGen <- function(x, value) standardGeneric('.rtsummary.meanRT<-')
@@ -398,7 +530,7 @@ classname <-'rtsummary'
 funcname <-'.rtsummary.medianRT'
 standGen <- function(object) standardGeneric('.rtsummary.medianRT')
 standMethod <- function(object) object@medianRT
-setGeneric(funcname,standGen,package='swale')
+setGeneric(funcname,standGen,package='rtanalyze')
 setMethod(funcname,classname,standMethod)
 slotreplace <-'.rtsummary.medianRT<-'
 standGen <- function(x, value) standardGeneric('.rtsummary.medianRT<-')
@@ -409,7 +541,7 @@ classname <-'rtsummary'
 funcname <-'.rtsummary.sdRT'
 standGen <- function(object) standardGeneric('.rtsummary.sdRT')
 standMethod <- function(object) object@sdRT
-setGeneric(funcname,standGen,package='swale')
+setGeneric(funcname,standGen,package='rtanalyze')
 setMethod(funcname,classname,standMethod)
 slotreplace <-'.rtsummary.sdRT<-'
 standGen <- function(x, value) standardGeneric('.rtsummary.sdRT<-')
@@ -420,7 +552,7 @@ classname <-'rtsummary'
 funcname <-'.rtsummary.pC'
 standGen <- function(object) standardGeneric('.rtsummary.pC')
 standMethod <- function(object) object@pC
-setGeneric(funcname,standGen,package='swale')
+setGeneric(funcname,standGen,package='rtanalyze')
 setMethod(funcname,classname,standMethod)
 slotreplace <-'.rtsummary.pC<-'
 standGen <- function(x, value) standardGeneric('.rtsummary.pC<-')
@@ -431,7 +563,7 @@ classname <-'rtsummary'
 funcname <-'.rtsummary.version'
 standGen <- function(object) standardGeneric('.rtsummary.version')
 standMethod <- function(object) object@version
-setGeneric(funcname,standGen,package='swale')
+setGeneric(funcname,standGen,package='rtanalyze')
 setMethod(funcname,classname,standMethod)
 slotreplace <-'.rtsummary.version<-'
 standGen <- function(x, value) standardGeneric('.rtsummary.version<-')
@@ -442,7 +574,7 @@ classname <-'fastdm'
 funcname <-'.fastdm.conditions'
 standGen <- function(object) standardGeneric('.fastdm.conditions')
 standMethod <- function(object) object@conditions
-setGeneric(funcname,standGen,package='swale')
+setGeneric(funcname,standGen,package='rtanalyze')
 setMethod(funcname,classname,standMethod)
 slotreplace <-'.fastdm.conditions<-'
 standGen <- function(x, value) standardGeneric('.fastdm.conditions<-')
@@ -453,7 +585,7 @@ classname <-'fastdm'
 funcname <-'.fastdm.format'
 standGen <- function(object) standardGeneric('.fastdm.format')
 standMethod <- function(object) object@format
-setGeneric(funcname,standGen,package='swale')
+setGeneric(funcname,standGen,package='rtanalyze')
 setMethod(funcname,classname,standMethod)
 slotreplace <-'.fastdm.format<-'
 standGen <- function(x, value) standardGeneric('.fastdm.format<-')
@@ -464,7 +596,7 @@ classname <-'fastdm'
 funcname <-'.fastdm.depends'
 standGen <- function(object) standardGeneric('.fastdm.depends')
 standMethod <- function(object) object@depends
-setGeneric(funcname,standGen,package='swale')
+setGeneric(funcname,standGen,package='rtanalyze')
 setMethod(funcname,classname,standMethod)
 slotreplace <-'.fastdm.depends<-'
 standGen <- function(x, value) standardGeneric('.fastdm.depends<-')
@@ -475,7 +607,7 @@ classname <-'fastdm'
 funcname <-'.fastdm.set'
 standGen <- function(object) standardGeneric('.fastdm.set')
 standMethod <- function(object) object@set
-setGeneric(funcname,standGen,package='swale')
+setGeneric(funcname,standGen,package='rtanalyze')
 setMethod(funcname,classname,standMethod)
 slotreplace <-'.fastdm.set<-'
 standGen <- function(x, value) standardGeneric('.fastdm.set<-')
@@ -486,7 +618,7 @@ classname <-'fastdm'
 funcname <-'.fastdm.datadir'
 standGen <- function(object) standardGeneric('.fastdm.datadir')
 standMethod <- function(object) object@datadir
-setGeneric(funcname,standGen,package='swale')
+setGeneric(funcname,standGen,package='rtanalyze')
 setMethod(funcname,classname,standMethod)
 slotreplace <-'.fastdm.datadir<-'
 standGen <- function(x, value) standardGeneric('.fastdm.datadir<-')
@@ -497,7 +629,7 @@ classname <-'fastdm'
 funcname <-'.fastdm.dataname'
 standGen <- function(object) standardGeneric('.fastdm.dataname')
 standMethod <- function(object) object@dataname
-setGeneric(funcname,standGen,package='swale')
+setGeneric(funcname,standGen,package='rtanalyze')
 setMethod(funcname,classname,standMethod)
 slotreplace <-'.fastdm.dataname<-'
 standGen <- function(x, value) standardGeneric('.fastdm.dataname<-')
@@ -508,7 +640,7 @@ classname <-'fastdm'
 funcname <-'.fastdm.outputname'
 standGen <- function(object) standardGeneric('.fastdm.outputname')
 standMethod <- function(object) object@outputname
-setGeneric(funcname,standGen,package='swale')
+setGeneric(funcname,standGen,package='rtanalyze')
 setMethod(funcname,classname,standMethod)
 slotreplace <-'.fastdm.outputname<-'
 standGen <- function(x, value) standardGeneric('.fastdm.outputname<-')
@@ -519,7 +651,7 @@ classname <-'fastdm'
 funcname <-'.fastdm.subjectlist'
 standGen <- function(object) standardGeneric('.fastdm.subjectlist')
 standMethod <- function(object) object@subjectlist
-setGeneric(funcname,standGen,package='swale')
+setGeneric(funcname,standGen,package='rtanalyze')
 setMethod(funcname,classname,standMethod)
 slotreplace <-'.fastdm.subjectlist<-'
 standGen <- function(x, value) standardGeneric('.fastdm.subjectlist<-')
@@ -530,7 +662,7 @@ classname <-'fastdm'
 funcname <-'.fastdm.appdir'
 standGen <- function(object) standardGeneric('.fastdm.appdir')
 standMethod <- function(object) object@appdir
-setGeneric(funcname,standGen,package='swale')
+setGeneric(funcname,standGen,package='rtanalyze')
 setMethod(funcname,classname,standMethod)
 slotreplace <-'.fastdm.appdir<-'
 standGen <- function(x, value) standardGeneric('.fastdm.appdir<-')
@@ -541,7 +673,7 @@ classname <-'fdmoutput'
 funcname <-'.fdmoutput.ID'
 standGen <- function(object) standardGeneric('.fdmoutput.ID')
 standMethod <- function(object) object@ID
-setGeneric(funcname,standGen,package='swale')
+setGeneric(funcname,standGen,package='rtanalyze')
 setMethod(funcname,classname,standMethod)
 slotreplace <-'.fdmoutput.ID<-'
 standGen <- function(x, value) standardGeneric('.fdmoutput.ID<-')
@@ -552,7 +684,7 @@ classname <-'fdmoutput'
 funcname <-'.fdmoutput.fdmex'
 standGen <- function(object) standardGeneric('.fdmoutput.fdmex')
 standMethod <- function(object) object@fdmex
-setGeneric(funcname,standGen,package='swale')
+setGeneric(funcname,standGen,package='rtanalyze')
 setMethod(funcname,classname,standMethod)
 slotreplace <-'.fdmoutput.fdmex<-'
 standGen <- function(x, value) standardGeneric('.fdmoutput.fdmex<-')
@@ -563,7 +695,7 @@ classname <-'fdmoutput'
 funcname <-'.fdmoutput.data'
 standGen <- function(object) standardGeneric('.fdmoutput.data')
 standMethod <- function(object) object@data
-setGeneric(funcname,standGen,package='swale')
+setGeneric(funcname,standGen,package='rtanalyze')
 setMethod(funcname,classname,standMethod)
 slotreplace <-'.fdmoutput.data<-'
 standGen <- function(x, value) standardGeneric('.fdmoutput.data<-')
@@ -574,7 +706,7 @@ classname <-'fdmoutput'
 funcname <-'.fdmoutput.parameters'
 standGen <- function(object) standardGeneric('.fdmoutput.parameters')
 standMethod <- function(object) object@parameters
-setGeneric(funcname,standGen,package='swale')
+setGeneric(funcname,standGen,package='rtanalyze')
 setMethod(funcname,classname,standMethod)
 slotreplace <-'.fdmoutput.parameters<-'
 standGen <- function(x, value) standardGeneric('.fdmoutput.parameters<-')
@@ -585,7 +717,7 @@ classname <-'fdmoutput'
 funcname <-'.fdmoutput.estimates'
 standGen <- function(object) standardGeneric('.fdmoutput.estimates')
 standMethod <- function(object) object@estimates
-setGeneric(funcname,standGen,package='swale')
+setGeneric(funcname,standGen,package='rtanalyze')
 setMethod(funcname,classname,standMethod)
 slotreplace <-'.fdmoutput.estimates<-'
 standGen <- function(x, value) standardGeneric('.fdmoutput.estimates<-')
@@ -596,7 +728,7 @@ classname <-'fdmoutput'
 funcname <-'.fdmoutput.bootstrapdata'
 standGen <- function(object) standardGeneric('.fdmoutput.bootstrapdata')
 standMethod <- function(object) object@bootstrapdata
-setGeneric(funcname,standGen,package='swale')
+setGeneric(funcname,standGen,package='rtanalyze')
 setMethod(funcname,classname,standMethod)
 slotreplace <-'.fdmoutput.bootstrapdata<-'
 standGen <- function(x, value) standardGeneric('.fdmoutput.bootstrapdata<-')

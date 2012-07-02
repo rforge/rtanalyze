@@ -24,8 +24,8 @@ setClass(
 	prototype=prototype(
 		version=1,
 		build=0,
-		update=2,
-		svnrev=7
+		update=3,
+		svnrev=8
 	)#,
 	#package='RTanalyze'
 )
@@ -40,6 +40,7 @@ setClass(
 				variable.levels = 'ANY',		#b-s variable levels
 				rtdata='ANY',					#list of rtdata objects
 				valid='logical',				#is subject valid
+				outliers='list',
 				remarks='character',			#remarks
 				version='ANY'					#version
 		
@@ -49,6 +50,33 @@ setClass(
 		
 		)#,
 #package='RTanalyze'
+)
+
+
+##subject outlier
+setClass(
+		Class='subjectoutlier',
+		representation=representation(
+				FUN='ANY',
+				which='ANY',
+				criteria='list',
+				pre.total='numeric',
+				rem.total='numeric',
+				post.total='numeric',
+				rem.prop='numeric',
+				marked.values='numeric',
+				remark='character',
+				version='ANY'
+		),
+		prototype=prototype(
+				version=new('version'),
+				pre.total=NULL,
+				rem.total=NULL,
+				post.total=NULL,
+				rem.prop=NULL,
+				marked.values=numeric(0),
+				remark=character(0)
+		)
 )
 
 ## RTanalyze outlier
@@ -64,6 +92,7 @@ setClass(
 				rem.high='numeric',
 				rem.prop='numeric',
 				post.total='numeric',
+				marked.values='numeric',
 				remark='character',
 				version='ANY'
 				),
@@ -78,6 +107,7 @@ setClass(
 						rem.high=NULL,
 						rem.prop=NULL,
 						post.total=NULL,
+						marked.values=numeric(0),
 						remark=character(0)
 						)
 		)

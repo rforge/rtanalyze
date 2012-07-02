@@ -123,9 +123,9 @@ function(rtdat,which=numeric(0),answer=TRUE)
 	
 	errors = total[total$correct==FALSE,]
 	correct = total[total$correct==TRUE,]
-	
+
 	#match matrix
-	cmat = apply(total[,-which(names(total)=='correct' | names(total)=='rt')],1,function(x) paste(x,collapse=''))
+	cmat = apply(as.matrix(total[,-which(names(total)=='correct' | names(total)=='rt')]),1,function(x) paste(x,collapse=''))
 	
 	#select rows in matchmatrix with longest	
 	if(nrow(errors)<=nrow(correct)) {
@@ -162,7 +162,7 @@ function(rtdat,which=numeric(0),answer=TRUE)
 	outframe$rt = pcrt
 	names(outframe)[ncol(outframe)]='pc'
 	row.names(outframe) = 1:nrow(outframe)
-	
+
 	return(outframe)
 	
 }

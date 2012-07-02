@@ -26,10 +26,11 @@ exportClasses(
 	version,
 	subjects,
 	outlier,
+	subjectoutlier,
 	rtdata,
 	rtsummary,
 	fastdm,
-	fdmoutput,
+	fdmoutput
 )
 
 exportMethods(

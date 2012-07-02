@@ -60,7 +60,7 @@ setAccRepFile <- function(classobject=NULL,funcnames=slotNames(classobject),file
 source('~/Documents/workspace/RTanalyze/R/ClassDef.R')
 filename='~/Documents/workspace/RTanalyze/R/Generics.R'
 methname='~/Documents/workspace/RTanalyze/tools/methodnames.txt'
-packagename = 'swale'
+packagename = 'rtanalyze'
 
 if(file.exists(filename)) file.remove(filename)
 if(file.exists(methname)) file.remove(methname)
@@ -73,6 +73,7 @@ cat('Writing methodlist to:',methname,'\n')
 setAccRepFile(new('version'),filename=filename,methname=methname,packagename=packagename)
 setAccRepFile(new('subjects'),filename=filename,methname=methname,packagename=packagename)
 setAccRepFile(new('outlier'),filename=filename,methname=methname,packagename=packagename)
+setAccRepFile(new('subjectoutlier'),filename=filename,methname=methname,packagename=packagename)
 setAccRepFile(new('rtdata'),filename=filename,methname=methname,packagename=packagename)
 setAccRepFile(new('rtsummary'),filename=filename,methname=methname,packagename=packagename)
 setAccRepFile(new('fastdm'),filename=filename,methname=methname,packagename=packagename)

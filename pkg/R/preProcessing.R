@@ -11,6 +11,7 @@
 #markPostError
 #markWarmUp
 #markOutliers
+#markSubjects
 #cormat.test
 
 markPostError <- function(rtdat) 
@@ -201,6 +202,59 @@ function(rtdat,method=c('abs','sd','mia-masd'),sdfac=3,rtmin=250,rtmax=2500,plot
 	
 	return(rtdat)
 }
+
+markSubjects <- function(subject,FUN,criterionlist,which.within=numeric(0),useCorrect='true') 
+#mark subjects as invalid based on a summary statistics
+{
+	
+	#check if function is pc
+	PCcall = which(as.character(match.call()$FUN)=='pc')
+	
+	#get valid subjects
+	whichsubjects = which(.subjects.valid(subject)==TRUE)
+	
+	for(i in 1:length(whichsubjects)) 
+	{
+		if(length(PCcall)>0) {
+			summary.rtdata = pc(.subjects.rtdata(subject)[[whichsubjects[i]]],which.within)
+			summvalue = summary.rtdata$pc
+		} else {
+			summary.rtdata = aggregate.rtdata(.subjects.rtdata(subject)[[whichsubjects[i]]],which.within,FUN,useCorrect=useCorrect)
+			summvalue = summary.rtdata$rt
+		}
+		
+		cat(whichsubjects[i],summvalue,'\n')
+		if(length(summvalue)==length(criterionlist)) {
+			
+			valid = logical(0)
+			for(j in 1:length(summvalue)) {
+				 valid = c(valid,eval(parse(text=paste('summvalue[j]',criterionlist[[j]][1],criterionlist[[j]][2],sep=''))))
+			}
+			 
+			cat(whichsubjects[i],valid,'\n\n')
+			if(is.numeric(criterionlist[[j]][3])) {
+				valid = valid[criterionlist[[j]][3]]
+			} else {
+				
+				if(criterionlist[[j]][3]=='any') {
+					valid = !any(valid)				
+				} else {
+					warning('No valid criterium to select validness of subjects. Using any() to select.')
+					valid = !any(valid)	
+				}
+			}
+		} else {
+			.subjects.valid(subject)[whichsubjects[i]]=FALSE
+			cat('Length of criterionlist does not match length of summary output\n')
+		}
+		
+		.subjects.valid(subject)[whichsubjects[i]]=valid
+	 
+		
+	}
+	
+	return(subject)
+} 
 
 
 cormat.test <- 
