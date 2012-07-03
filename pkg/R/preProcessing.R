@@ -20,7 +20,8 @@ markPostError <- function(rtdat)
 	
 	count_posterror = 0
 	pre.len = length(.rtdata.rt(rtdat)[.rtdata.valid(rtdat)==TRUE])
-	
+	pre.shadow = .rtdata.valid(rtdat)
+		
 	for(i in 2:length(.rtdata.rt(rtdat))) 
 	{
 		if(.rtdata.correct(rtdat)[i-1]==FALSE) {
@@ -42,6 +43,7 @@ markPostError <- function(rtdat)
 	.outlier.rem.high(outlier) = numeric(0)
 	.outlier.rem.prop(outlier) = .outlier.rem.total(outlier) / .outlier.pre.total(outlier)
 	.outlier.post.total(outlier) = length(.rtdata.rt(rtdat)[.rtdata.valid(rtdat)==TRUE])
+	.outlier.marked.values(outlier) = which(apply(cbind(pre.shadow,.rtdata.valid(rtdat)),1,sum)==1)
 	
 	.rtdata.outliers(rtdat) = c(.rtdata.outliers(rtdat),outlier)
 	
@@ -57,6 +59,7 @@ markNA <- function(rtdat)
 {
 	
 	pre.len = length(.rtdata.rt(rtdat)[.rtdata.valid(rtdat)==TRUE])
+	pre.shadow = .rtdata.valid(rtdat)
 	
 	count_postNA = 0
 	
@@ -81,6 +84,7 @@ markNA <- function(rtdat)
 	.outlier.rem.high(outlier) = numeric(0)
 	.outlier.rem.prop(outlier) = .outlier.rem.total(outlier) / .outlier.pre.total(outlier)
 	.outlier.post.total(outlier) = length(.rtdata.rt(rtdat)[.rtdata.valid(rtdat)==TRUE])
+	.outlier.marked.values(outlier) = which(apply(cbind(pre.shadow,.rtdata.valid(rtdat)),1,sum)==1)
 	
 	.rtdata.outliers(rtdat) = c(.rtdata.outliers(rtdat),outlier)
 	
@@ -96,6 +100,7 @@ markWarmUp <- function(rtdat,at.each.condition=NULL,numtrials=5)
 {
 	
 	pre.len = length(.rtdata.rt(rtdat)[.rtdata.valid(rtdat)==TRUE])
+	pre.shadow = .rtdata.valid(rtdat)
 	
 	count_postWU = 0
 	
@@ -129,6 +134,7 @@ markWarmUp <- function(rtdat,at.each.condition=NULL,numtrials=5)
 	.outlier.rem.high(outlier) = numeric(0)
 	.outlier.rem.prop(outlier) = .outlier.rem.total(outlier) / .outlier.pre.total(outlier)
 	.outlier.post.total(outlier) = length(.rtdata.rt(rtdat)[.rtdata.valid(rtdat)==TRUE])
+	.outlier.marked.values(outlier) = which(apply(cbind(pre.shadow,.rtdata.valid(rtdat)),1,sum)==1)
 	
 	.rtdata.outliers(rtdat) = c(.rtdata.outliers(rtdat),outlier)
 	
@@ -150,6 +156,7 @@ function(rtdat,method=c('abs','sd','mia-masd'),sdfac=3,rtmin=250,rtmax=2500,plot
 	validvec = .rtdata.valid(rtdat)
 	
 	prelen = length(.rtdata.rt(rtdat)[.rtdata.valid(rtdat)==TRUE])
+	pre.shadow = .rtdata.valid(rtdat)
 	
 	if(method=='sd') {
 		rtmin = mean(rtvec[which(validvec==TRUE)])-sd(rtvec[which(validvec==TRUE)])*sdfac
@@ -162,7 +169,6 @@ function(rtdat,method=c('abs','sd','mia-masd'),sdfac=3,rtmin=250,rtmax=2500,plot
 	
 	.rtdata.valid(rtdat)[rtvec<rtmin] = FALSE
 	.rtdata.valid(rtdat)[rtvec>rtmax] = FALSE
-	#.rtdata.valid(rtdat)[is.na(validvec)] = NA
 	
 	postlen.low = length(which(rtvec[which(validvec==TRUE)]<rtmin))
 	postlen.high = length(which(rtvec[which(validvec==TRUE)]>rtmax))
@@ -180,18 +186,10 @@ function(rtdat,method=c('abs','sd','mia-masd'),sdfac=3,rtmin=250,rtmax=2500,plot
 	.outlier.rem.high(outlier) = postlen.high
 	.outlier.rem.prop(outlier) = .outlier.rem.total(outlier) / .outlier.pre.total(outlier)
 	.outlier.post.total(outlier) = length(.rtdata.rt(rtdat)[.rtdata.valid(rtdat)==TRUE])
+	.outlier.marked.values(outlier) = which(apply(cbind(pre.shadow,.rtdata.valid(rtdat)),1,sum)==1)
 	
 	.rtdata.outliers(rtdat) = c(.rtdata.outliers(rtdat),outlier)
-	
-	##[DEFUNT OUTLIER FUNCTIONS]
-		#newlen = length(rtvec[which(validvec==TRUE)])-(length(which(rtvec[which(validvec==TRUE)]<rtmin))+length(which(rtvec[which(validvec==TRUE)]>rtmax)))
-		#perc = abs((newlen-length(rtvec[which(validvec==TRUE)]))/length(rtvec[which(validvec==TRUE)])*100)
-	
-		#.rtdata.outlier.method(rtdat) = method
-		#.rtdata.outlier.minmax(rtdat) = c(rtmin,rtmax)
-		#.rtdata.outlier.abs(rtdat) = list(total=length(rtvec[which(validvec==TRUE)]),lower=length(which(rtvec[which(validvec==TRUE)]<rtmin)),higher=length(which(rtvec[which(validvec==TRUE)]>rtmax)))
-		#.rtdata.outlier.percentage(rtdat) = perc	
-	
+		
 	#add remarks
 	.rtdata.remarks(rtdat) = c(.rtdata.remarks(rtdat),'marked RT outliers as invalid.')
 
@@ -203,7 +201,7 @@ function(rtdat,method=c('abs','sd','mia-masd'),sdfac=3,rtmin=250,rtmax=2500,plot
 	return(rtdat)
 }
 
-markSubjects <- function(subject,FUN,criterionlist,which.within=numeric(0),useCorrect='true') 
+markSubjects <- function(subject,FUN,criterionlist,which.within=numeric(0),useCorrect='true',remark=character(0)) 
 #mark subjects as invalid based on a summary statistics
 {
 	
@@ -212,6 +210,7 @@ markSubjects <- function(subject,FUN,criterionlist,which.within=numeric(0),useCo
 	
 	#get valid subjects
 	whichsubjects = which(.subjects.valid(subject)==TRUE)
+	marked = numeric(0)
 	
 	for(i in 1:length(whichsubjects)) 
 	{
@@ -223,7 +222,7 @@ markSubjects <- function(subject,FUN,criterionlist,which.within=numeric(0),useCo
 			summvalue = summary.rtdata$rt
 		}
 		
-		cat(whichsubjects[i],summvalue,'\n')
+		#cat(whichsubjects[i],summvalue,'\n')
 		if(length(summvalue)==length(criterionlist)) {
 			
 			valid = logical(0)
@@ -231,13 +230,13 @@ markSubjects <- function(subject,FUN,criterionlist,which.within=numeric(0),useCo
 				 valid = c(valid,eval(parse(text=paste('summvalue[j]',criterionlist[[j]][1],criterionlist[[j]][2],sep=''))))
 			}
 			 
-			cat(whichsubjects[i],valid,'\n\n')
+			#cat(whichsubjects[i],valid,'\n\n')
 			if(is.numeric(criterionlist[[j]][3])) {
 				valid = valid[criterionlist[[j]][3]]
 			} else {
 				
 				if(criterionlist[[j]][3]=='any') {
-					valid = !any(valid)				
+					valid = !any(valid)
 				} else {
 					warning('No valid criterium to select validness of subjects. Using any() to select.')
 					valid = !any(valid)	
@@ -245,16 +244,59 @@ markSubjects <- function(subject,FUN,criterionlist,which.within=numeric(0),useCo
 			}
 		} else {
 			.subjects.valid(subject)[whichsubjects[i]]=FALSE
-			cat('Length of criterionlist does not match length of summary output\n')
+			warning('Length of criterionlist does not match length of summary output. Setting subject to invalid.')
 		}
 		
-		.subjects.valid(subject)[whichsubjects[i]]=valid
-	 
+		#which one is marked
+		if(valid==FALSE) marked = c(marked,whichsubjects[i])
 		
+		.subjects.valid(subject)[whichsubjects[i]]=valid
 	}
+
+	#store information on outlier object
+	outliers = new(subjectoutlier)
+	
+	.subjectoutlier.FUN(outliers) = as.character(match.call()$FUN) 
+	.subjectoutlier.which(outliers) = which.within
+	.subjectoutlier.criteria(outliers) = criterionlist
+	.subjectoutlier.pre.total(outliers) = length(whichsubjects)
+	.subjectoutlier.post.total(outliers) = which(.subjects.valid(subject)==TRUE)
+	
+	.subjectoutlier.rem.total(outliers) = .subjectoutlier.pre.total(outliers) - .subjectoutlier.post.total(outliers)  
+	.subjectoutlier.rem.prop(outliers) = .subjectoutlier.rem.total(outliers)/.subjectoutlier.pre.total(outliers)
+	.subjectoutlier.marked.values(outliers) = marked 
+	.subjectoutlier.remark(outliers) = remarks
+	
+	.subjects.outliers(subject) = c(.subjects.outliers(subject),outliers)
+
 	
 	return(subject)
 } 
+
+showOutliers <- 
+function(rtdat) 
+#show outlier summary
+{
+	ol = .rtdata.outliers(rtdat)
+	nlen = length(ol)
+	
+	nframe = data.frame(type=rep(NA,nlen),method=rep(NA,nlen),removed=rep(NA,nlen),proportion=rep(NA,nlen))
+	
+	for(i in 1:nlen) {
+		nframe$type[i] = .outlier.type(ol[[i]]) 
+		nframe$method[i] = .outlier.method(ol[[i]]) 
+		nframe$removed[i] = paste(.outlier.rem.total(ol[[i]]),' (of ',.outlier.pre.total(ol[[i]]),')',sep='') 
+		nframe$proportion[i] = .outlier.rem.prop(ol[[i]]) 
+	}
+	
+	show(nframe)
+	cat('\n')
+	cat('Total number of remaining trials after outlier removal is ',.outlier.post.total(ol[[nlen]]),' (of original ',.outlier.pre.total(ol[[1]]),' trials) \n',sep='')
+	cat('Total proportion of removed trials is ',(.outlier.pre.total(ol[[1]])-.outlier.post.total(ol[[nlen]]))/.outlier.pre.total(ol[[1]]),'\n',sep='')
+	
+	
+	return(invisible(TRUE))
+}
 
 
 cormat.test <- 

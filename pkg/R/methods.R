@@ -9,7 +9,7 @@ setGeneric('aggregate',package='stats',where=.GlobalEnv)
 
 #method for rtdata
 setMethod('aggregate','rtdata',
-		function(x,which=NULL,FUN,useCorrect=TRUE) {
+		function(x,which=NULL,FUN,useCorrect='both') {
 			aggregate.rtdata(x,which,FUN,useCorrect)
 		}
 )
@@ -23,13 +23,7 @@ setMethod('show','rtdata',
 			for(i in 1:length(object@remarks)) cat('',object@remarks[i],'\n')
 			
 			cat('\n[outliers]:\n')
-			cat(' method   :',object@outlier.method,'\n')
-			cat(' minmax   :',object@outlier.minmax,'\n')
-			#cat(' abs\n')
-			#cat('      tot :',object@outlier.abs$total,'\n')
-			#cat('      low :',object@outlier.abs$lower,'\n')
-			#cat('      hi  :',object@outlier.abs$higher,'\n')
-			cat(' perc/tot :',round(object@outlier.percentage,2),'\n')
+			showOutliers(object)
 			cat('\n')
 		}
 )
@@ -57,6 +51,7 @@ setMethod('names','rtdata',
 			return(names(dat))
 		}
 )
+
 
 #### SUBSETTING DATA.FRAME ACCESS AND REPLACEMENT METHODS #####
 #method for rtdata SUBSETTING

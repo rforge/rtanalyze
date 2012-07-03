@@ -35,10 +35,7 @@ exportClasses(
 
 exportMethods(
 	show,
-	plot,
-	names,
-	aggregate,
-	summary
+	names
 )
 
 import(
