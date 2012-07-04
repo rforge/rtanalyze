@@ -7,7 +7,7 @@
 
 
 #CONTAINS
-#summarize
+#summarize.subjects
 #aggregate.rtdata
 #pc
 #summary.rtdata

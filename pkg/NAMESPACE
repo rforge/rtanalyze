@@ -2,10 +2,12 @@ export(
 	importRTs,
 	batch.fillSubjects,
 	markOutliers,
-	markNa,
+	markNA,
 	markWarmUp,
 	markPostError,
 	checkSubjects,
+	markSubjects,
+	showOutliers,
 	cormat.test,
 	summarize.subjects,
 	aggregate.rtdata,
@@ -17,7 +19,13 @@ export(
 	concatenate.rtdata,
 	within,
 	sat,
-	plot.sat
+	plot.sat,
+	doexp,
+	makeconditionarray,
+	getdepends,
+	getestimates,
+	getsamples,
+	simulatesamples
 )
 
 exportPattern("^[\\.]")
