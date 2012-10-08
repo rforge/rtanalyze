@@ -24,8 +24,8 @@ setClass(
 	prototype=prototype(
 		version=1,
 		build=0,
-		update=5,
-		svnrev=10
+		update=6,
+		svnrev=11
 	)#,
 	#package='RTanalyze'
 )
@@ -125,7 +125,7 @@ setClass(
 				outlier.method='character',		#outlier method [DEFUNCT]
 				outlier.minmax='numeric',		#outlier.minmax [DEFUNCT]
 				outlier.percentage='numeric',	#outlier percentage [DEFUNCT]
-				outliers='list',				#outlier sequence
+				outliers='ANY',				#outlier sequence
 				summary='ANY',					#summary measures for dataset
 				version='ANY'					#version
 		

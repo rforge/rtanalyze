@@ -280,21 +280,24 @@ function(rtdat)
 	ol = .rtdata.outliers(rtdat)
 	nlen = length(ol)
 	
-	nframe = data.frame(type=rep(NA,nlen),method=rep(NA,nlen),removed=rep(NA,nlen),proportion=rep(NA,nlen))
-	
-	for(i in 1:nlen) {
-		nframe$type[i] = .outlier.type(ol[[i]]) 
-		nframe$method[i] = .outlier.method(ol[[i]]) 
-		nframe$removed[i] = paste(.outlier.rem.total(ol[[i]]),' (of ',.outlier.pre.total(ol[[i]]),')',sep='') 
-		nframe$proportion[i] = .outlier.rem.prop(ol[[i]]) 
+	if(nlen>0) {
+		nframe = data.frame(type=rep(NA,nlen),method=rep(NA,nlen),removed=rep(NA,nlen),proportion=rep(NA,nlen))
+		
+		for(i in 1:nlen) {
+			nframe$type[i] = .outlier.type(ol[[i]]) 
+			nframe$method[i] = .outlier.method(ol[[i]]) 
+			nframe$removed[i] = paste(.outlier.rem.total(ol[[i]]),' (of ',.outlier.pre.total(ol[[i]]),')',sep='') 
+			nframe$proportion[i] = .outlier.rem.prop(ol[[i]]) 
+		}
+		
+		show(nframe)
+		cat('\n')
+		cat('Total number of remaining trials after outlier removal is ',.outlier.post.total(ol[[nlen]]),' (of original ',.outlier.pre.total(ol[[1]]),' trials) \n',sep='')
+		cat('Total proportion of removed trials is ',(.outlier.pre.total(ol[[1]])-.outlier.post.total(ol[[nlen]]))/.outlier.pre.total(ol[[1]]),'\n',sep='')
+	} else {
+		cat('No outlier removal applied\n')
 	}
-	
-	show(nframe)
-	cat('\n')
-	cat('Total number of remaining trials after outlier removal is ',.outlier.post.total(ol[[nlen]]),' (of original ',.outlier.pre.total(ol[[1]]),' trials) \n',sep='')
-	cat('Total proportion of removed trials is ',(.outlier.pre.total(ol[[1]])-.outlier.post.total(ol[[nlen]]))/.outlier.pre.total(ol[[1]]),'\n',sep='')
-	
-	
+
 	return(invisible(TRUE))
 }
 

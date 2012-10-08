@@ -17,6 +17,7 @@ export(
 	npq,
 	bin,
 	concatenate.rtdata,
+	plot.rtdata,
 	within,
 	sat,
 	plot.sat,

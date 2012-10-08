@@ -304,6 +304,20 @@ function(subject)
 
 }
 
+
+plot.rtdata <-
+function(rtdata) 
+#plot rtdata object
+{
+	layout(matrix(1:4,2,byrow=T))
+	minmax = c(min(.rtdata.rt(rtdata)[.rtdata.valid(rtdata)],na.rm=T)/1.1,max(.rtdata.rt(rtdata)[.rtdata.valid(rtdata)],na.rm=T)*1.1)
+	hist(.rtdata.rt(rtdata)[.rtdata.valid(rtdata) & .rtdata.correct(rtdata)==TRUE],xlim=minmax,col=3,main='Correct',bty='n',xlab='RT (correct)')
+	hist(.rtdata.rt(rtdata)[.rtdata.valid(rtdata) & .rtdata.correct(rtdata)==FALSE],xlim=minmax,col=2,main='Incorrect',bty='n',xlab='RT (incorrect)')
+	boxplot(.rtdata.rt(rtdata)[.rtdata.valid(rtdata) & .rtdata.correct(rtdata)==TRUE],col=gray(.5),horizontal=TRUE,bty='n',ylim=minmax)
+	boxplot(.rtdata.rt(rtdata)[.rtdata.valid(rtdata) & .rtdata.correct(rtdata)==FALSE],col=gray(.5),horizontal=TRUE,bty='n',ylim=minmax)
+	
+}
+
 sat <-
 function(rtdata,quants=c(.1,.3,.5,.7,.9),condition=NULL)
 #calculate speed/accuracy tradeoff
