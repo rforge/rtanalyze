@@ -54,20 +54,20 @@ function(filename,rtcol='RTclc',correctcol='correct',correct.answer='correct',in
 	#check resp_uc  
 	if(length(resp_uclim)>0) {
 		resp_uc = rawdat[,which(!is.na(match(names(rawdat),resp_uclim[1])))]
-		.rtdata.valid(rtdat)[which(resp_uc>=as.numeric(resp_uclim[2]))]=NA
+		.rtdata.rt(rtdat)[which(resp_uc>=as.numeric(resp_uclim[2]))]=NA
 		.rtdata.remarks(rtdat) = c(.rtdata.remarks(rtdat),paste(length(which(resp_uc>=as.numeric(resp_uclim[2]))),' uc_responses >=',resp_uclim[2],' marked.',sep=''))
 	}
 	
 	#check stim_uc
 	if(length(stim_uclim)>0) {
 		stim_uc = rawdat[,which(!is.na(match(names(rawdat),stim_uclim[1])))]
-		.rtdata.valid(rtdat)[which(stim_uc>=as.numeric(stim_uclim[2]))]=NA
+		.rtdata.rt(rtdat)[which(stim_uc>=as.numeric(stim_uclim[2]))]=NA
 		.rtdata.remarks(rtdat) = c(.rtdata.remarks(rtdat),paste(length(which(resp_uc>=as.numeric(stim_uclim[2]))),' uc_stimuli >=',stim_uclim[2],' marked.',sep=''))
 	}
 	
 	#check wrong responses
 	if(remove.invalidresponse)	{
-		.rtdata.valid(rtdat)[which(is.na(.rtdata.correct(rtdat)))]=NA	
+		.rtdata.rt(rtdat)[which(is.na(.rtdata.correct(rtdat)))]=NA	
 		.rtdata.remarks(rtdat) = c(.rtdata.remarks(rtdat),paste(length(which(is.na(.rtdata.correct(rtdat)))),'of invalid responses marked.'))
 	}
 	

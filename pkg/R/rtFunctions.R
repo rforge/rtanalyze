@@ -43,7 +43,7 @@ function(subject,which.within=numeric(0),FUN,useCorrect='true',which.between=num
 		}
 		
 		#get subject variables
-		sdat = matrix(.subjects.variables(subject.data.switch)[whichsubjects[i],],nrow=nrow(summary.rtdata),ncol=length(.subjects.variables(subject.data.switch)[whichsubjects[i],]),byrow=T)
+		sdat = matrix(.subjects.variables(subject)[whichsubjects[i],],nrow=nrow(summary.rtdata),ncol=length(.subjects.variables(subject)[whichsubjects[i],]),byrow=T)
 		#add value
 		sdat = cbind(sdat,summary.rtdata)
 		summary.subject = rbind(summary.subject,sdat)
@@ -51,12 +51,12 @@ function(subject,which.within=numeric(0),FUN,useCorrect='true',which.between=num
 	}
 	
 	#reset between subject variables as factors
-	for(col in 1:ncol(.subjects.variables(subject.data.switch))) {
+	for(col in 1:ncol(.subjects.variables(subject))) {
 		summary.subject[,col] = as.factor(unlist(summary.subject[,col]))
 	}
 	
 	#set new names
-	newname = c(names(.subjects.variables(subject.data.switch)),names(summary.rtdata))
+	newname = c(names(.subjects.variables(subject)),names(summary.rtdata))
 	newname[length(newname)] = as.character(match.call()$FUN)
 	names(summary.subject) = newname
 	
