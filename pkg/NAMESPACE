@@ -22,6 +22,7 @@ export(
 	sat,
 	plot.sat,
 	wpr,
+	export.rt,
 	doexp,
 	makeconditionarray,
 	getdepends,

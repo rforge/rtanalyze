@@ -8,7 +8,8 @@
 
 #CONTAINS
 #checkSubjects
-#longform
+#export.rt (longform)
+#wpr
 
 checkSubjects <-
 function(subjects,min.n=10)
@@ -22,10 +23,112 @@ function(subjects,min.n=10)
 	
 }
 
-export.rt <- function() 
+export.rt <- function(subjectdata,which=NULL,ID.ind=NULL) 
 #put all RT's in longform (for SPSS export)
 {
-cat('still defunct\n')	
+	if(missing(which)) which=numeric(0)
+		
+	subs = which(subjectdata@valid==TRUE)
+	
+	longrt = numeric(0)
+	
+	for(i in 1:length(subs)) {
+		
+		rtdat = .subjects.rtdata(subjectdata)[[subs[i]]]
+		validdat = .rtdata.rt(rtdat)[which(.rtdata.valid(rtdat)==TRUE)]
+		repeatvec = seq(1:length(validdat))
+		
+		
+		#check which independents to use
+		if(is.character(which)) which = match(which,names(.rtdata.conditions(rtdat)))
+		
+		#set subjectindicator variable
+		if(is.null(ID.ind)) {
+			ID = rep(subs[i],length(validdat))
+		} else {
+			if(is.numeric(ID.ind)) {
+				ID = rep(.subjects.variables(subjectdata)[subs[i],length(validdat)])
+			} else {
+				ID = rep(.subjects.variables(subjectdata)[subs[i],which(names(.subjects.variables(subjectdata))==as.character(ID.ind))],length(validdat))			
+			}
+		}
+		
+		rtout = cbind(ID,as.character(.rtdata.conditions(rtdat)[which(.rtdata.valid(rtdat)==TRUE),which]),repeatvec,.rtdata.rt(rtdat)[which(.rtdata.valid(rtdat)==TRUE)],as.numeric(.rtdata.correct(rtdat)[which(.rtdata.valid(rtdat)==TRUE)]))
+		longrt = rbind(longrt,rtout)
+		
+	}
+	
+	#structure dataframe and give correct measurement levels
+	longrt = as.data.frame(longrt,stringsAsFactors=FALSE)
+	names(longrt) = c('ID',names(.rtdata.conditions(rtdat))[which],'REPEATID','RT','RESPONSE')
+	longrt$REPEATID = as.numeric(longrt$REPEATID)
+	longrt$ID = as.numeric(longrt$ID)
+	longrt$RT = as.numeric(longrt$RT)
+	longrt$RESPONSE = as.numeric(longrt$RESPONSE)
+	
+	return(longrt)
+	
 	
 }
 
+wpr <- function(subjectdata,iq.indicator,which.within=numeric(0),quantiles=c(.1,.3,.5,.7,.9),ID.ind=NULL) 
+#calculate worst performance rule (rt*iq correlations per quantile)
+{
+	
+	subs = which(subjectdata@valid==TRUE)
+	qframe = matrix(NA,0,length(quantiles))
+	
+	#calculate quantiles for each valid subject (in long form)
+	for(i in 1:length(subs)) {
+		
+		qd = quantile.rtdata(.subjects.rtdata(subjectdata)[[subs[i]]],which=which.within,quantiles=quantiles)
+		qd = qd$quantiles[qd$quantiles$correct==TRUE,]
+		
+		#set subjectindicator variable
+		if(is.null(ID.ind)) {
+			ID = rep(subs[i],nrow(qd))
+		} else {
+			if(is.numeric(ID.ind)) {
+				ID = rep(.subjects.variables(subjectdata)[subs[i],nrow(qd)])
+			} else {
+				ID = rep(.subjects.variables(subjectdata)[subs[i],which(names(.subjects.variables(subjectdata))==as.character(ID.ind))],nrow(qd))			
+			}
+		}
+		qd=cbind(ID,qd)
+		qframe = rbind(qframe,qd)
+	}
+	
+	levs = levels(qframe$stimulus)
+	
+	outframe = pframe = matrix(NA,length(levs),length(quantiles),dimnames=list(levs,quantiles))
+	
+	
+	#get IQ vector
+	if(is.numeric(iq.indicator)) {
+		iqvec = .subjects.variables(subjectdata)[,iq.indicator]
+	} else {
+		iqvec = .subjects.variables(subjectdata)[,which(names(.subjects.variables(subjectdata))==as.character(iq.indicator))]
+	}
+	
+	#perform IQ*quantile analysis per level of the within variable (for each quantile)
+	for(i in 1:length(levs)) 
+	{
+		for(j in 1:length(quantiles)) {
+			
+			col = ncol(qframe)-length(quantiles)+j
+			qvec = qframe[qframe$stimulus==levs[i],col]
+			corest = cor.test(iqvec,qvec)
+			
+			outframe[i,j] = corest$estimate
+			pframe[i,j] = corest$p.value
+			
+		}
+	}
+	
+	## TODO
+	# add functionality to add number of observations per bin.
+	# or do variables-with-error analysis
+	
+	return(list(estimates=outframe,pvalues=pframe))
+	
+}

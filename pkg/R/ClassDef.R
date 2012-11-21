@@ -24,8 +24,8 @@ setClass(
 	prototype=prototype(
 		version=1,
 		build=0,
-		update=8,
-		svnrev=13
+		update=9,
+		svnrev=14
 	)#,
 	#package='RTanalyze'
 )
@@ -117,6 +117,7 @@ setClass(
 		Class='rtdata',
 		representation=representation(
 				rt='numeric',					#vector of ReactionTimes (in ms)
+				rt.units = 'character',			#indicator of units of RT ('ms','s')
 				correct='logical',				#correct or incorrect response
 				valid='logical',				#valid RT (FALSE if outlier)
 				conditions='data.frame',		#within-subject conditions	
@@ -125,7 +126,7 @@ setClass(
 				outlier.method='character',		#outlier method [DEFUNCT]
 				outlier.minmax='numeric',		#outlier.minmax [DEFUNCT]
 				outlier.percentage='numeric',	#outlier percentage [DEFUNCT]
-				outliers='ANY',				#outlier sequence
+				outliers='ANY',					#outlier sequence
 				summary='ANY',					#summary measures for dataset
 				version='ANY'					#version
 		
