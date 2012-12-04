@@ -1,8 +1,8 @@
 Package: rtanalyze
 Type: Package
 Title: RTanalyze, reaction times storage and analysis. 
-Version: 1.0-9
-Date:  2012-10-31
+Version: 1.1-0
+Date:  2012-12-04
 Author: Wouter D. Weeda
 Maintainer: Wouter D. Weeda <w.d.weeda@gmail.com>
 Depends: R (>= 2.12.0), methods, graphics,
@@ -10,4 +10,4 @@ Description: RTanalyze, stores reaction time data and contains tools for RT anal
 URL: http://rtanalyze.r-forge.r-project.org/
 License: GPL-2
 LazyLoad: yes
-Packaged: Wed Oct 31 16:54:50 2012
+Packaged: Tue Dec 04 16:54:50 2012

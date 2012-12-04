@@ -12,6 +12,7 @@
 #markWarmUp
 #markOutliers
 #markSubjects
+#ewma
 #cormat.test
 
 markPostError <- function(rtdat) 
@@ -148,23 +149,27 @@ markWarmUp <- function(rtdat,at.each.condition=NULL,numtrials=5)
 }
 
 markOutliers <- 
-function(rtdat,method=c('abs','sd','mia-masd'),sdfac=3,rtmin=250,rtmax=2500,plot=F) 
+function(rtdat,method.min=c('abs','sd','ewma'),method.max=c('abs','sd'),sdfac=3,rtmin=200,rtmax=2500,ewma.control=list(lambda=.01,c0=.5,sigma0=.5,L=1.5,fast=TRUE),plot=F) 
 #mark outliers based on on absolute values or SD
 {
 	rtvec = .rtdata.rt(rtdat)
-	method = match.arg(method,c('abs','sd','mia-masd'))
+	method.min = match.arg(method.min,c('abs','sd','ewma'))
+	method.max = match.arg(method.max,c('abs','sd','ewma'))
 	validvec = .rtdata.valid(rtdat)
 	
 	prelen = length(.rtdata.rt(rtdat)[.rtdata.valid(rtdat)==TRUE])
 	pre.shadow = .rtdata.valid(rtdat)
 	
-	if(method=='sd') {
+	if(method.min=='sd') {
 		rtmin = mean(rtvec[which(validvec==TRUE)])-sd(rtvec[which(validvec==TRUE)])*sdfac
+	}
+	
+	if(method.max=='sd') {
 		rtmax = mean(rtvec[which(validvec==TRUE)])+sd(rtvec[which(validvec==TRUE)])*sdfac
 	}
 	
-	if(method=='mia-masd') {
-		rtmax = mean(rtvec[which(validvec==TRUE)])+sd(rtvec[which(validvec==TRUE)])*sdfac
+	if(method.min=='ewma') {
+		rtmin = ewma(rtdat,lambda=ewma.control$lambda,c0=ewma.control$c0,sigma0=ewma.control$sigma0,L=ewma.control$L,abslower=rtmin,fast=ewma.control$fast)
 	}
 	
 	.rtdata.valid(rtdat)[rtvec<rtmin] = FALSE
@@ -176,8 +181,8 @@ function(rtdat,method=c('abs','sd','mia-masd'),sdfac=3,rtmin=250,rtmax=2500,plot
 	outlier = new('outlier')
 	
 	.outlier.type(outlier) = 'rtoutlier'
-	.outlier.method(outlier) = method
-	if(method=='mia-masd') .outlier.remark(outlier) = c(.outlier.remark(outlier),paste('sdfac=',sdfac,sep=''))
+	.outlier.method(outlier) = paste('min=',method.min,';max=',method.max,sep='')
+	if(method.min=='sd' | method.max=='sd') .outlier.remark(outlier) = c(.outlier.remark(outlier),paste('sdfac=',sdfac,sep=''))
 	
 	.outlier.minmax(outlier) = c(rtmin,rtmax)
 	.outlier.pre.total(outlier) = prelen
@@ -299,6 +304,44 @@ function(rtdat)
 	}
 
 	return(invisible(TRUE))
+}
+
+
+ewma <-
+function(rtdata,lambda=.01,c0=.5,sigma0=.5,L=1.5,abslower=0,fast=TRUE) 
+#ewma fast-guess removal (Vandekerckhove & Tuerlincks, 2007)
+{
+	
+	#use only valids
+	rtvec = .rtdata.rt(rtdata)[.rtdata.valid(rtdata)==TRUE]
+	cvec = as.numeric(.rtdata.correct(rtdata)[.rtdata.valid(rtdata)==TRUE])
+	
+	#order rtvecs
+	o = order(rtvec)
+	rtvec = rtvec[o]
+	cvec = cvec[o]
+	
+	#calculate cs and UCL vectors
+	cs = UCLs = numeric(length(rtvec))
+	cs[1] = c0
+	UCLs[1] = c0 + L*sigma0*sqrt((lambda/(2-lambda)*(1-(1-lambda))^(2*1)))
+	for(i in 2:length(rtvec)) {
+		cs[i] = lambda*cvec[i] + (1-lambda)*cs[i-1]
+		UCLs[i] = c0 + L*sigma0*sqrt( (lambda/(2-lambda)) * ( 1-(1-lambda)^(2*i) )  )
+		if(fast) {
+			if(!(cs[i]<UCLs[i])) {
+				if(rtvec[i]<abslower) return(abslower) else return(rtvec[i])				
+			}
+		}
+	}
+	
+	#make on entire matrix
+	cv = (cs<UCLs)
+	rt = rtvec[max(which(cv))]
+	attr(rt,'clist') <- list(c=cs,UCL=UCLs)
+	
+	return(rt)
+	
 }
 
 

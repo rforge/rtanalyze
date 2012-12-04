@@ -8,6 +8,7 @@ export(
 	checkSubjects,
 	markSubjects,
 	showOutliers,
+	ewma,
 	cormat.test,
 	summarize.subjects,
 	aggregate.rtdata,

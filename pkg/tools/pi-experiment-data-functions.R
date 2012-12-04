@@ -139,7 +139,7 @@ function(dir,newdir=NA,patt='.txt',add='rtdata_',studynum=0)
 		fs= strsplit(file,'\\.')
 		
 		## IQ STUDY 1: 
-		if(studynum==10) rtdata = importRTs(paste(dir,'/',file,sep=''),rtcol='RT',correctcol='correct',correct.answer=TRUE,incorrect.answer=FALSE,ws_conds=c('orient','lr','diff','block'),ms.correction=.1,autoblock=99)
+		if(studynum==10) rtdata = importRTs(paste(dir,'/',file,sep=''),rtcol='RT',correctcol='correct',correct.answer=TRUE,incorrect.answer=FALSE,ws_conds=c('orient','lr','diff','block'),ms.correction=.1)
 		
 		## IQ STUDY 2:
 		if(studynum==20) rtdata = importRTs(paste(dir,'/',file,sep=''),rtcol='RTcmp',correctcol='correct',correct.answer='correct',incorrect.answer='incorrect',ws_conds=c('condition'),ms.correction=1)
