@@ -149,7 +149,7 @@ markWarmUp <- function(rtdat,at.each.condition=NULL,numtrials=5)
 }
 
 markOutliers <- 
-function(rtdat,method.min=c('abs','sd','ewma'),method.max=c('abs','sd'),sdfac=3,rtmin=200,rtmax=2500,ewma.control=list(lambda=.01,c0=.5,sigma0=.5,L=1.5,fast=TRUE),plot=F) 
+function(rtdat,method.min=c('abs','sd','ewma'),method.max=c('abs','sd'),sdfac=3,rtmin=200,rtmax=2500,ewma.control=list(lambda=.01,c0=.5,sigma0=.5,L=1.5,uselower=TRUE),plot=F) 
 #mark outliers based on on absolute values or SD
 {
 	rtvec = .rtdata.rt(rtdat)
@@ -169,7 +169,18 @@ function(rtdat,method.min=c('abs','sd','ewma'),method.max=c('abs','sd'),sdfac=3,
 	}
 	
 	if(method.min=='ewma') {
-		rtmin = ewma(rtdat,lambda=ewma.control$lambda,c0=ewma.control$c0,sigma0=ewma.control$sigma0,L=ewma.control$L,abslower=rtmin,fast=ewma.control$fast)
+		ewmastat = ewma(rtdat,lambda=ewma.control$lambda,c0=ewma.control$c0,sigma0=ewma.control$sigma0,L=ewma.control$L,abslower=rtmin) 
+		if(ewma.control$uselower==TRUE) rtmin = ewmastat$rtmin else rtmin = ewmastat$rtmax
+		
+		if(plot) {
+			plot(1:length(ewmastat$c),ewmastat$c,type='l',bty='n',xlab='RT',ylab='ewmastat',axes=F)
+			lines(ewmastat$UCL,lty=2,col='gray')
+			points(ewmastat$min,ewmastat$c[ewmastat$min],pch=19,col=3)
+			points(ewmastat$max,ewmastat$c[ewmastat$max],pch=19,col=2)
+			axis(2)
+			axis(1,at=c(1,round(median(1:length(ewmastat$c))),length(ewmastat$c)),label=c(ewmastat$rtvec[1],ewmastat$rtvec[round(median(1:length(ewmastat$c)))],ewmastat$rtvec[length(ewmastat$c)]))
+			browser()
+		}
 	}
 	
 	.rtdata.valid(rtdat)[rtvec<rtmin] = FALSE
@@ -308,7 +319,7 @@ function(rtdat)
 
 
 ewma <-
-function(rtdata,lambda=.01,c0=.5,sigma0=.5,L=1.5,abslower=0,fast=TRUE) 
+function(rtdata,lambda=.01,c0=.5,sigma0=.5,L=1.5,abslower=0) 
 #ewma fast-guess removal (Vandekerckhove & Tuerlincks, 2007)
 {
 	
@@ -328,19 +339,18 @@ function(rtdata,lambda=.01,c0=.5,sigma0=.5,L=1.5,abslower=0,fast=TRUE)
 	for(i in 2:length(rtvec)) {
 		cs[i] = lambda*cvec[i] + (1-lambda)*cs[i-1]
 		UCLs[i] = c0 + L*sigma0*sqrt( (lambda/(2-lambda)) * ( 1-(1-lambda)^(2*i) )  )
-		if(fast) {
-			if(!(cs[i]<UCLs[i])) {
-				if(rtvec[i]<abslower) return(abslower) else return(rtvec[i])				
-			}
-		}
 	}
 	
 	#make on entire matrix
 	cv = (cs<UCLs)
-	rt = rtvec[max(which(cv))]
-	attr(rt,'clist') <- list(c=cs,UCL=UCLs)
+	mx = max(which(cv))
+	rtmax = rtvec[mx]
 	
-	return(rt)
+	cv = !(cs<UCLs)
+	mn = min(which(cv))
+	rtmin = rtvec[mn]
+		
+	return(list(rtmin=rtmin,rtmax=rtmax,min=mn,max=mx,c=cs,UCL=UCLs,rtvec=rtvec,cvec=cvec))
 	
 }
 
