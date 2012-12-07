@@ -179,7 +179,9 @@ function(rtdat,method.min=c('abs','sd','ewma'),method.max=c('abs','sd'),sdfac=3,
 			points(ewmastat$max,ewmastat$c[ewmastat$max],pch=19,col=2)
 			axis(2)
 			axis(1,at=c(1,round(median(1:length(ewmastat$c))),length(ewmastat$c)),label=c(ewmastat$rtvec[1],ewmastat$rtvec[round(median(1:length(ewmastat$c)))],ewmastat$rtvec[length(ewmastat$c)]))
-			browser()
+			ans = readline('Which threshold to use? [1=green][2=red] > ')
+			if(ans=='1') rtmin = ewmastat$rtmin
+			if(ans=='2') rtmin = ewmastat$rtmax
 		}
 	}
 	
@@ -208,11 +210,6 @@ function(rtdat,method.min=c('abs','sd','ewma'),method.max=c('abs','sd'),sdfac=3,
 		
 	#add remarks
 	.rtdata.remarks(rtdat) = c(.rtdata.remarks(rtdat),'marked RT outliers as invalid.')
-
-
-	if(plot) {
-		cat('plotsie')
-	}
 	
 	return(rtdat)
 }

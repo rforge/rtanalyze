@@ -295,7 +295,7 @@ function(rtdat1,rtdat2)
 }
 
 
-within <-
+within.condition <-
 function(subject) 
 #show within subject conditions of 
 {
