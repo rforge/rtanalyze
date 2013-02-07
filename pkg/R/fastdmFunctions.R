@@ -289,3 +289,45 @@ function(fdmex,subject.indicator=NULL,fixedlist=NULL,bootstrapnum=1)
 	
 }
 
+
+makefitarray <- function(fdmdata,FUN) 
+#make a fitarray to plot easy
+{
+	totlev = makelevels(fdmdata@fdmex@conditions,fdmdata@data)
+	totmat = makeconditionarray(fdmdata@fdmex@conditions,totlev)
+	
+	condnames = colnames(totmat)
+	dmcondnames = rownames(totmat)
+	funname = paste(match.call()$FUN,c('TRUE','FALSE','Pc'),sep='')
+	outmat = modmat = as.data.frame(matrix(NA,length(dmcondnames),3,dimnames=list(dmcondnames,funname)))
+
+	data = fdmdata@data
+	
+	for(dmcond in 1:dim(totmat)[1])	{
+		evstring = paste('dat = data[data$`',condnames[1],'`==\'',totmat[dmcond,1],'\'',sep='')
+		
+		if(length(condnames)>1) {
+			for(i in 2:length(condnames)) {
+				evstring = paste(evstring,' & data$`',condnames[i],'`==\'',totmat[dmcond,i],'\'',sep='') 
+			}
+		}
+		
+		evstring = paste(evstring,',]',sep='')
+		eval(parse(text=evstring))
+		
+		outmat[dmcond,1] = apply(as.matrix(dat$TIME[dat$RESPONSE==1]),2,FUN)
+		outmat[dmcond,2] = apply(as.matrix(dat$TIME[dat$RESPONSE==0]),2,FUN)
+		outmat[dmcond,3] = length(dat$TIME[dat$RESPONSE==1]) / (length(dat$TIME[dat$RESPONSE==1])+length(dat$TIME[dat$RESPONSE==0]))		
+	
+		mod = as.data.frame(fdmdata@bootstrapdata[[dmcond]])
+		
+		modmat[dmcond,1] = apply(as.matrix(mod$V2[mod$V1==1]),2,FUN) 
+		modmat[dmcond,2] = apply(as.matrix(mod$V2[mod$V1==0]),2,FUN) 
+		modmat[dmcond,3] = length(mod$V2[mod$V1==1]) / (length(mod$V2[mod$V1==1])+length(mod$V2[mod$V1==0]))
+		
+	}
+	
+	return(list(data=outmat,model=modmat))
+	
+	
+}

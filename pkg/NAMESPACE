@@ -5,6 +5,7 @@ export(
 	markNA,
 	markWarmUp,
 	markPostError,
+	markCondition,
 	checkSubjects,
 	markSubjects,
 	showOutliers,
@@ -29,6 +30,7 @@ export(
 	getdepends,
 	getestimates,
 	getsamples,
+	makefitarray,
 	simulatesamples
 )
 

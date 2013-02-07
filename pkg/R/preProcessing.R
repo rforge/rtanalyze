@@ -11,6 +11,8 @@
 #markPostError
 #markWarmUp
 #markOutliers
+#markCondition
+
 #markSubjects
 #ewma
 #cormat.test
@@ -67,7 +69,7 @@ markNA <- function(rtdat)
 	for(i in 1:length(.rtdata.rt(rtdat))) 
 	{
 		if(is.na(.rtdata.rt(rtdat)[i])) {
-			count_postNA = count_postNA + 1
+			if(.rtdata.valid(rtdat)[i]==TRUE) count_postNA = count_postNA + 1
 			.rtdata.valid(rtdat)[i]=FALSE
 		}
 	}	
@@ -212,6 +214,59 @@ function(rtdat,method.min=c('abs','sd','ewma'),method.max=c('abs','sd'),sdfac=3,
 	.rtdata.remarks(rtdat) = c(.rtdata.remarks(rtdat),'marked RT outliers as invalid.')
 	
 	return(rtdat)
+}
+
+markCondition <- function(rtdat,condition,value) 
+#mark an entire condition as invaldi 
+{
+	pre.len = length(.rtdata.rt(rtdat)[.rtdata.valid(rtdat)==TRUE])
+	pre.shadow = .rtdata.valid(rtdat)
+	
+	count_postCR = 0
+	
+	
+	if(!is.null(condition) & !is.null(value)) {
+		for(i in 1:length(condition)) 
+		{
+			parsetext = paste('selected = which(.rtdata.conditions(rtdat)$`',condition[[i]][1],'`==\'',value[[i]][1],'\')',sep='')
+			eval(parse(text=parsetext))
+			
+			.rtdata.valid(rtdat)[selected]=FALSE
+			
+			count_postCR = count_postCR + length(selected)
+		}
+		
+	}
+	
+	
+	outlier = new('outlier')
+	
+	.outlier.type(outlier) = 'conditionremove'
+	.outlier.method(outlier) = 'remove'
+	
+	.outlier.minmax(outlier) = numeric(0)
+	.outlier.pre.total(outlier) = pre.len
+	.outlier.rem.total(outlier) = count_postCR
+	.outlier.rem.low(outlier) = numeric(0)
+	.outlier.rem.high(outlier) = numeric(0)
+	.outlier.rem.prop(outlier) = .outlier.rem.total(outlier) / .outlier.pre.total(outlier)
+	.outlier.post.total(outlier) = length(.rtdata.rt(rtdat)[.rtdata.valid(rtdat)==TRUE])
+	.outlier.marked.values(outlier) = which(apply(cbind(pre.shadow,.rtdata.valid(rtdat)),1,sum)==1)
+	
+	.rtdata.outliers(rtdat) = c(.rtdata.outliers(rtdat),outlier)
+	
+	mat = cbind(unlist(condition),unlist(value))
+	txt = character(0)
+	for(i in 1:dim(mat)[1]) {
+		txt = c(txt,paste(mat[i,1],'=',mat[i,2],sep=''))
+	}
+	
+	
+	#add remarks
+	.rtdata.remarks(rtdat) = c(.rtdata.remarks(rtdat),paste('marked conditions (',paste(txt,collapse=','),') as invalid.',sep=''))
+	
+	return(rtdat)	
+	
 }
 
 markSubjects <- function(subject,FUN,criterionlist,which.within=numeric(0),useCorrect='true',remark=character(0)) 
