@@ -71,7 +71,12 @@ function(rtdat,which=NULL,FUN,useCorrect=c('both','true','false','none'))
 #wrapper for aggregate called on rtdata objects (see methods for Generic).
 {
 	if(class(rtdat)!='rtdata') stop('works only on \'rtdata\' class objects.')
-	if(missing(which)) which=numeric(0)
+	if(missing(which)) which=NULL
+	
+	if(is.null(which)) {
+		rtdat = overall(rtdat,TRUE)
+		which = names(.rtdata.conditions(rtdat))[dim(.rtdata.conditions(rtdat))[2]]
+	}
 	
 	useCorrect = match.arg(useCorrect,c('both','true','false','none'))
 	
@@ -112,7 +117,7 @@ function(rtdat,which=NULL,FUN,useCorrect=c('both','true','false','none'))
 }
 
 pc <-
-function(rtdat,which=numeric(0),answer=TRUE) 
+function(rtdat,which=NULL,answer=TRUE) 
 #return percentagecorrect
 {
 	
@@ -169,7 +174,7 @@ function(rtdat,which=numeric(0),answer=TRUE)
 
 
 summary.rtdata <-
-function(rtdat,which=numeric(0),pc=FALSE) 
+function(rtdat,which=NULL,pc=FALSE) 
 #return a summary data.frame
 {
 	if(class(rtdat)!='rtdata') stop('summary.rtdata() works only on \'rtdata\' class objects.')

@@ -1,7 +1,7 @@
 Package: rtanalyze
 Type: Package
 Title: RTanalyze, reaction times storage and analysis. 
-Version: 1.1-4
+Version: 1.1-5
 Date:  2013-02-13
 Author: Wouter D. Weeda
 Maintainer: Wouter D. Weeda <w.d.weeda@gmail.com>

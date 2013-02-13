@@ -47,7 +47,8 @@ markPostError <- function(rtdat)
 	.outlier.rem.prop(outlier) = .outlier.rem.total(outlier) / .outlier.pre.total(outlier)
 	.outlier.post.total(outlier) = length(.rtdata.rt(rtdat)[.rtdata.valid(rtdat)==TRUE])
 	.outlier.marked.values(outlier) = which(apply(cbind(pre.shadow,.rtdata.valid(rtdat)),1,sum)==1)
-	
+	.outlier.remark(outlier) = ''
+
 	.rtdata.outliers(rtdat) = c(.rtdata.outliers(rtdat),outlier)
 	
 	#add remarks
@@ -88,6 +89,7 @@ markNA <- function(rtdat)
 	.outlier.rem.prop(outlier) = .outlier.rem.total(outlier) / .outlier.pre.total(outlier)
 	.outlier.post.total(outlier) = length(.rtdata.rt(rtdat)[.rtdata.valid(rtdat)==TRUE])
 	.outlier.marked.values(outlier) = which(apply(cbind(pre.shadow,.rtdata.valid(rtdat)),1,sum)==1)
+	.outlier.remark(outlier) = ''
 	
 	.rtdata.outliers(rtdat) = c(.rtdata.outliers(rtdat),outlier)
 	
@@ -138,7 +140,8 @@ markWarmUp <- function(rtdat,at.each.condition=NULL,numtrials=5)
 	.outlier.rem.prop(outlier) = .outlier.rem.total(outlier) / .outlier.pre.total(outlier)
 	.outlier.post.total(outlier) = length(.rtdata.rt(rtdat)[.rtdata.valid(rtdat)==TRUE])
 	.outlier.marked.values(outlier) = which(apply(cbind(pre.shadow,.rtdata.valid(rtdat)),1,sum)==1)
-	
+	.outlier.remark(outlier) = ''
+
 	.rtdata.outliers(rtdat) = c(.rtdata.outliers(rtdat),outlier)
 	
 	
@@ -158,14 +161,22 @@ function(rtdat,which.condition=NULL,method.min=c('abs','sd','ewma'),method.max=c
 	method.min = match.arg(method.min,c('abs','sd','ewma'))
 	method.max = match.arg(method.max,c('abs','sd','ewma'))
 	
+	if(missing(which.condition)) which.condition=NULL
+	
+	if(is.null(which.condition)) {
+		rtdat = overall(rtdat,TRUE)
+		which.condition = names(.rtdata.conditions(rtdat))[dim(.rtdata.conditions(rtdat))[2]]
+		remov = TRUE
+	} else remov = FALSE
+	
 	if(is.numeric(which.condition)) {
-		dat = data.frame(rtdat@conditions[,which.condition]) 
+		dat = data.frame(.rtdata.conditions(rtdat)[,which.condition]) 
 		names(dat) = which.condition
-		totlev = makelevels(names(rtdat@conditions==which.condition),dat)
-		totmat = makeconditionarray(names(rtdat@conditions==which.condition),totlev)
+		totlev = makelevels(names(.rtdata.conditions(rtdat)==which.condition),dat)
+		totmat = makeconditionarray(names(.rtdata.conditions(rtdat)==which.condition),totlev)
 		
 	} else {
-		dat = data.frame(rtdat@conditions[,match(which.condition,names(.rtdata.conditions(rtdat)))])
+		dat = data.frame(.rtdata.conditions(rtdat)[,match(which.condition,names(.rtdata.conditions(rtdat)))])
 		names(dat) = which.condition
 		totlev = makelevels(which.condition,dat)
 		totmat = makeconditionarray(which.condition,totlev)
@@ -175,22 +186,16 @@ function(rtdat,which.condition=NULL,method.min=c('abs','sd','ewma'),method.max=c
 	
 	for(cond in 1:dim(totmat)[1])	{
 	
-		if(!is.null(which.condition)) {
-			evstring = paste('selvec = which(rtdat@conditions$`',condnames[1],'`==\'',totmat[cond,1],'\'',sep='')
-			if(length(condnames)>1) {
-				for(i in 2:length(condnames)) {
-					evstring = paste(evstring,' & rtdat@conditions$`',condnames[i],'`==\'',totmat[cond,i],'\'',sep='') 
-				}
+		evstring = paste('selvec = which(rtdat@conditions$`',condnames[1],'`==\'',totmat[cond,1],'\'',sep='')
+		if(length(condnames)>1) {
+			for(i in 2:length(condnames)) {
+				evstring = paste(evstring,' & rtdat@conditions$`',condnames[i],'`==\'',totmat[cond,i],'\'',sep='') 
 			}
-			
-			evstring = paste(evstring,')',sep='')
-			eval(parse(text=evstring))
-			#selvec is now an object of the selected trials	
-		} else {
-			cat('Will give an error as no condition is specified\n')
 		}
 		
-		
+		evstring = paste(evstring,')',sep='')
+		eval(parse(text=evstring))
+		#selvec is now an object of the selected trials	
 		
 		pre.shadow = .rtdata.valid(rtdat)
 		prelen = length(.rtdata.rt(rtdat)[.rtdata.valid(rtdat)==TRUE])
@@ -244,15 +249,17 @@ function(rtdat,which.condition=NULL,method.min=c('abs','sd','ewma'),method.max=c
 		.outlier.rem.prop(outlier) = .outlier.rem.total(outlier) / .outlier.pre.total(outlier)
 		.outlier.post.total(outlier) = length(.rtdata.rt(rtdat)[.rtdata.valid(rtdat)==TRUE])
 		.outlier.marked.values(outlier) = which(apply(cbind(pre.shadow,.rtdata.valid(rtdat)),1,sum)==1)
-		.outlier.remark(outlier) = paste('within condition [',rownames(totmat)[cond],'] removed ',.outlier.rem.total(outlier),' out of ',length(rtvec[validvec==TRUE]),' (',round(.outlier.rem.total(outlier) / length(rtvec[validvec==TRUE]),3),')',sep='')
+		.outlier.remark(outlier) = paste(' [',rownames(totmat)[cond],'] removed ',.outlier.rem.total(outlier),' out of ',length(rtvec[validvec==TRUE]),' (',round(.outlier.rem.total(outlier) / length(rtvec[validvec==TRUE]),3),')',sep='')
 		
 		.rtdata.outliers(rtdat) = c(.rtdata.outliers(rtdat),outlier)
 			
 		#add remarks
 		.rtdata.remarks(rtdat) = c(.rtdata.remarks(rtdat),'marked RT outliers as invalid.')
 				
-		}
-		
+	}
+	
+	if(remov) rtdat = overall(rtdat,FALSE)
+	
 	return(rtdat)
 }
 
@@ -292,6 +299,7 @@ markCondition <- function(rtdat,condition,value)
 	.outlier.rem.prop(outlier) = .outlier.rem.total(outlier) / .outlier.pre.total(outlier)
 	.outlier.post.total(outlier) = length(.rtdata.rt(rtdat)[.rtdata.valid(rtdat)==TRUE])
 	.outlier.marked.values(outlier) = which(apply(cbind(pre.shadow,.rtdata.valid(rtdat)),1,sum)==1)
+	.outlier.remark(outlier) = ''
 	
 	.rtdata.outliers(rtdat) = c(.rtdata.outliers(rtdat),outlier)
 	
@@ -448,6 +456,20 @@ function(rtdata,accdata,lambda=.01,c0=.5,sigma0=.5,L=1.5,abslower=0)
 	
 }
 
+
+overall <- function(rtdat,add=T) 
+#add a 'ghost' overall condtions
+{
+
+	if(add) {
+		overall = as.factor(rep('overall',dim(.rtdata.conditions(rtdat))[1]))
+		.rtdata.conditions(rtdat) = cbind(.rtdata.conditions(rtdat),overall)
+	} else {
+		if(names(.rtdata.conditions(rtdat))[dim(.rtdata.conditions(rtdat))[2]]=='overall') .rtdata.conditions(rtdat) = .rtdata.conditions(rtdat)[,-dim(.rtdata.conditions(rtdat))[2]] else warning('No ghost condition removed.')
+	}
+	
+	return(rtdat)
+}
 
 cormat.test <- 
 function(datavecs,pretty.out=FALSE,rnd=2)
