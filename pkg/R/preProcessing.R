@@ -151,68 +151,108 @@ markWarmUp <- function(rtdat,at.each.condition=NULL,numtrials=5)
 }
 
 markOutliers <- 
-function(rtdat,method.min=c('abs','sd','ewma'),method.max=c('abs','sd'),sdfac=3,rtmin=200,rtmax=2500,ewma.control=list(lambda=.01,c0=.5,sigma0=.5,L=1.5,uselower=TRUE),plot=F) 
+function(rtdat,which.condition=NULL,method.min=c('abs','sd','ewma'),method.max=c('abs','sd'),sdfac=3,rtmin=200,rtmax=2500,ewma.control=list(lambda=.01,c0=.5,sigma0=.5,L=1.5,uselower=TRUE),plot=F) 
 #mark outliers based on on absolute values or SD
 {
-	rtvec = .rtdata.rt(rtdat)
+	
 	method.min = match.arg(method.min,c('abs','sd','ewma'))
 	method.max = match.arg(method.max,c('abs','sd','ewma'))
-	validvec = .rtdata.valid(rtdat)
 	
-	prelen = length(.rtdata.rt(rtdat)[.rtdata.valid(rtdat)==TRUE])
-	pre.shadow = .rtdata.valid(rtdat)
-	
-	if(method.min=='sd') {
-		rtmin = mean(rtvec[which(validvec==TRUE)])-sd(rtvec[which(validvec==TRUE)])*sdfac
-	}
-	
-	if(method.max=='sd') {
-		rtmax = mean(rtvec[which(validvec==TRUE)])+sd(rtvec[which(validvec==TRUE)])*sdfac
-	}
-	
-	if(method.min=='ewma') {
-		ewmastat = ewma(rtdat,lambda=ewma.control$lambda,c0=ewma.control$c0,sigma0=ewma.control$sigma0,L=ewma.control$L,abslower=rtmin) 
-		if(ewma.control$uselower==TRUE) rtmin = ewmastat$rtmin else rtmin = ewmastat$rtmax
+	if(is.numeric(which.condition)) {
+		dat = data.frame(rtdat@conditions[,which.condition]) 
+		names(dat) = which.condition
+		totlev = makelevels(names(rtdat@conditions==which.condition),dat)
+		totmat = makeconditionarray(names(rtdat@conditions==which.condition),totlev)
 		
-		if(plot) {
-			plot(1:length(ewmastat$c),ewmastat$c,type='l',bty='n',xlab='RT',ylab='ewmastat',axes=F)
-			lines(ewmastat$UCL,lty=2,col='gray')
-			points(ewmastat$min,ewmastat$c[ewmastat$min],pch=19,col=3)
-			points(ewmastat$max,ewmastat$c[ewmastat$max],pch=19,col=2)
-			axis(2)
-			axis(1,at=c(1,round(median(1:length(ewmastat$c))),length(ewmastat$c)),label=c(ewmastat$rtvec[1],ewmastat$rtvec[round(median(1:length(ewmastat$c)))],ewmastat$rtvec[length(ewmastat$c)]))
-			ans = readline('Which threshold to use? [1=green][2=red] > ')
-			if(ans=='1') rtmin = ewmastat$rtmin
-			if(ans=='2') rtmin = ewmastat$rtmax
+	} else {
+		dat = data.frame(rtdat@conditions[,match(which.condition,names(.rtdata.conditions(rtdat)))])
+		names(dat) = which.condition
+		totlev = makelevels(which.condition,dat)
+		totmat = makeconditionarray(which.condition,totlev)
+	}	
+	
+	condnames = colnames(totmat)
+	
+	for(cond in 1:dim(totmat)[1])	{
+	
+		if(!is.null(which.condition)) {
+			evstring = paste('selvec = which(rtdat@conditions$`',condnames[1],'`==\'',totmat[cond,1],'\'',sep='')
+			if(length(condnames)>1) {
+				for(i in 2:length(condnames)) {
+					evstring = paste(evstring,' & rtdat@conditions$`',condnames[i],'`==\'',totmat[cond,i],'\'',sep='') 
+				}
+			}
+			
+			evstring = paste(evstring,')',sep='')
+			eval(parse(text=evstring))
+			#selvec is now an object of the selected trials	
+		} else {
+			cat('Will give an error as no condition is specified\n')
 		}
-	}
-	
-	.rtdata.valid(rtdat)[rtvec<rtmin] = FALSE
-	.rtdata.valid(rtdat)[rtvec>rtmax] = FALSE
-	
-	postlen.low = length(which(rtvec[which(validvec==TRUE)]<rtmin))
-	postlen.high = length(which(rtvec[which(validvec==TRUE)]>rtmax))
-	
-	outlier = new('outlier')
-	
-	.outlier.type(outlier) = 'rtoutlier'
-	.outlier.method(outlier) = paste('min=',method.min,';max=',method.max,sep='')
-	if(method.min=='sd' | method.max=='sd') .outlier.remark(outlier) = c(.outlier.remark(outlier),paste('sdfac=',sdfac,sep=''))
-	
-	.outlier.minmax(outlier) = c(rtmin,rtmax)
-	.outlier.pre.total(outlier) = prelen
-	.outlier.rem.total(outlier) = postlen.low + postlen.high
-	.outlier.rem.low(outlier) = postlen.low
-	.outlier.rem.high(outlier) = postlen.high
-	.outlier.rem.prop(outlier) = .outlier.rem.total(outlier) / .outlier.pre.total(outlier)
-	.outlier.post.total(outlier) = length(.rtdata.rt(rtdat)[.rtdata.valid(rtdat)==TRUE])
-	.outlier.marked.values(outlier) = which(apply(cbind(pre.shadow,.rtdata.valid(rtdat)),1,sum)==1)
-	
-	.rtdata.outliers(rtdat) = c(.rtdata.outliers(rtdat),outlier)
 		
-	#add remarks
-	.rtdata.remarks(rtdat) = c(.rtdata.remarks(rtdat),'marked RT outliers as invalid.')
-	
+		
+		
+		pre.shadow = .rtdata.valid(rtdat)
+		prelen = length(.rtdata.rt(rtdat)[.rtdata.valid(rtdat)==TRUE])
+		
+		rtvec = .rtdata.rt(rtdat)[selvec]
+		accvec = .rtdata.correct(rtdat)[selvec]
+		validvec = .rtdata.valid(rtdat)[selvec]
+		
+		if(method.min=='sd') {
+			rtmin = mean(rtvec[which(validvec==TRUE)])-sd(rtvec[which(validvec==TRUE)])*sdfac
+		}
+		
+		if(method.max=='sd') {
+			rtmax = mean(rtvec[which(validvec==TRUE)])+sd(rtvec[which(validvec==TRUE)])*sdfac
+		}
+		
+		if(method.min=='ewma') {
+			ewmastat = ewma(rtvec[validvec==TRUE],accvec[validvec==TRUE],lambda=ewma.control$lambda,c0=ewma.control$c0,sigma0=ewma.control$sigma0,L=ewma.control$L,abslower=rtmin) 
+			if(ewma.control$uselower==TRUE) rtmin = ewmastat$rtmin else rtmin = ewmastat$rtmax
+			
+			if(plot) {
+				plot(1:length(ewmastat$c),ewmastat$c,type='l',bty='n',xlab='RT',ylab='ewmastat',axes=F)
+				lines(ewmastat$UCL,lty=2,col='gray')
+				points(ewmastat$min,ewmastat$c[ewmastat$min],pch=19,col=3)
+				points(ewmastat$max,ewmastat$c[ewmastat$max],pch=19,col=2)
+				axis(2)
+				axis(1,at=c(1,round(median(1:length(ewmastat$c))),length(ewmastat$c)),label=c(ewmastat$rtvec[1],ewmastat$rtvec[round(median(1:length(ewmastat$c)))],ewmastat$rtvec[length(ewmastat$c)]))
+				ans = readline('Which threshold to use? [1=green][2=red] > ')
+				if(ans=='1') rtmin = ewmastat$rtmin
+				if(ans=='2') rtmin = ewmastat$rtmax
+			}
+		}
+		
+		.rtdata.valid(rtdat)[selvec][rtvec<rtmin] = FALSE
+		.rtdata.valid(rtdat)[selvec][rtvec>rtmax] = FALSE
+		
+		postlen.low = length(which(rtvec[which(validvec==TRUE)]<rtmin))
+		postlen.high = length(which(rtvec[which(validvec==TRUE)]>rtmax))
+		
+		outlier = new('outlier')
+		
+		.outlier.type(outlier) = paste('rtoutlier',sep='')
+		.outlier.method(outlier) = paste('min=',method.min,';max=',method.max,sep='')
+		if(method.min=='sd' | method.max=='sd') .outlier.method(outlier) = paste(.outlier.method(outlier),paste('sdfac=',sdfac,sep=''),sep=';')
+		
+		.outlier.minmax(outlier) = c(rtmin,rtmax)
+		.outlier.pre.total(outlier) = prelen
+		.outlier.rem.total(outlier) = postlen.low + postlen.high
+		.outlier.rem.low(outlier) = postlen.low
+		.outlier.rem.high(outlier) = postlen.high
+		.outlier.rem.prop(outlier) = .outlier.rem.total(outlier) / .outlier.pre.total(outlier)
+		.outlier.post.total(outlier) = length(.rtdata.rt(rtdat)[.rtdata.valid(rtdat)==TRUE])
+		.outlier.marked.values(outlier) = which(apply(cbind(pre.shadow,.rtdata.valid(rtdat)),1,sum)==1)
+		.outlier.remark(outlier) = paste('within condition [',rownames(totmat)[cond],'] removed ',.outlier.rem.total(outlier),' out of ',length(rtvec[validvec==TRUE]),' (',round(.outlier.rem.total(outlier) / length(rtvec[validvec==TRUE]),3),')',sep='')
+		
+		.rtdata.outliers(rtdat) = c(.rtdata.outliers(rtdat),outlier)
+			
+		#add remarks
+		.rtdata.remarks(rtdat) = c(.rtdata.remarks(rtdat),'marked RT outliers as invalid.')
+				
+		}
+		
 	return(rtdat)
 }
 
@@ -349,16 +389,18 @@ function(rtdat)
 	nlen = length(ol)
 	
 	if(nlen>0) {
-		nframe = data.frame(type=rep(NA,nlen),method=rep(NA,nlen),removed=rep(NA,nlen),proportion=rep(NA,nlen))
+		nframe = data.frame(type=rep(NA,nlen),method=rep(NA,nlen),removed=rep(NA,nlen),proportion=rep(NA,nlen),remarks=rep(NA,nlen))
 		
 		for(i in 1:nlen) {
 			nframe$type[i] = .outlier.type(ol[[i]]) 
 			nframe$method[i] = .outlier.method(ol[[i]]) 
-			nframe$removed[i] = paste(.outlier.rem.total(ol[[i]]),' (of ',.outlier.pre.total(ol[[i]]),')',sep='') 
+			nframe$removed[i] = paste(.outlier.rem.total(ol[[i]]),' (of ',.outlier.pre.total(ol[[i]]),')*',sep='') 
 			nframe$proportion[i] = .outlier.rem.prop(ol[[i]]) 
+			nframe$remarks[i] = .outlier.remark(ol[[i]])
 		}
 		
 		show(nframe)
+		
 		cat('\n')
 		cat('Total number of remaining trials after outlier removal is ',.outlier.post.total(ol[[nlen]]),' (of original ',.outlier.pre.total(ol[[1]]),' trials) \n',sep='')
 		cat('Total proportion of removed trials is ',(.outlier.pre.total(ol[[1]])-.outlier.post.total(ol[[nlen]]))/.outlier.pre.total(ol[[1]]),'\n',sep='')
@@ -371,13 +413,13 @@ function(rtdat)
 
 
 ewma <-
-function(rtdata,lambda=.01,c0=.5,sigma0=.5,L=1.5,abslower=0) 
+function(rtdata,accdata,lambda=.01,c0=.5,sigma0=.5,L=1.5,abslower=0) 
 #ewma fast-guess removal (Vandekerckhove & Tuerlincks, 2007)
 {
 	
-	#use only valids
-	rtvec = .rtdata.rt(rtdata)[.rtdata.valid(rtdata)==TRUE]
-	cvec = as.numeric(.rtdata.correct(rtdata)[.rtdata.valid(rtdata)==TRUE])
+	#input vectors are assumed to be VALID trials
+	rtvec = rtdata
+	cvec = accdata
 	
 	#order rtvecs
 	o = order(rtvec)
