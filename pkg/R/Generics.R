@@ -263,6 +263,17 @@ standMethod <- function(x, value) {x@marked.values<- value;x}
 setGeneric(slotreplace,standGen)
 setReplaceMethod(funcname,classname,standMethod)
 classname <-'outlier'
+funcname <-'.outlier.ewma.stats'
+standGen <- function(object) standardGeneric('.outlier.ewma.stats')
+standMethod <- function(object) object@ewma.stats
+setGeneric(funcname,standGen,package='rtanalyze')
+setMethod(funcname,classname,standMethod)
+slotreplace <-'.outlier.ewma.stats<-'
+standGen <- function(x, value) standardGeneric('.outlier.ewma.stats<-')
+standMethod <- function(x, value) {x@ewma.stats<- value;x}
+setGeneric(slotreplace,standGen)
+setReplaceMethod(funcname,classname,standMethod)
+classname <-'outlier'
 funcname <-'.outlier.remark'
 standGen <- function(object) standardGeneric('.outlier.remark')
 standMethod <- function(object) object@remark

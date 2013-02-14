@@ -23,6 +23,7 @@ exportMethods(
 .outlier.selection.total,
 .outlier.selection.vector,
 .outlier.marked.values,
+.outlier.ewma.stats,
 .outlier.remark,
 .outlier.version,
 .subjectoutlier.FUN,

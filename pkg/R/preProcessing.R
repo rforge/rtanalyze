@@ -154,7 +154,7 @@ markWarmUp <- function(rtdat,at.each.condition=NULL,numtrials=5)
 }
 
 markOutliers <- 
-function(rtdat,which.condition=NULL,method.min=c('abs','sd','ewma'),method.max=c('abs','sd'),sdfac=3,rtmin=200,rtmax=2500,ewma.control=list(lambda=.01,c0=.5,sigma0=.5,L=1.5,uselower=TRUE),plot=F) 
+function(rtdat,which.condition=NULL,method.min=c('abs','sd','ewma'),method.max=c('abs','sd'),sdfac=3,rtmin=200,rtmax=2500,ewma.control=list(lambda=.01,c0=.5,sigma0=.5,L=1.5,select=F)) 
 #mark outliers based on on absolute values or SD
 {
 	
@@ -212,21 +212,17 @@ function(rtdat,which.condition=NULL,method.min=c('abs','sd','ewma'),method.max=c
 			rtmax = mean(rtvec[which(validvec==TRUE)])+sd(rtvec[which(validvec==TRUE)])*sdfac
 		}
 		
+		
+		ewmastat = NULL
+
 		if(method.min=='ewma') {
-			ewmastat = ewma(rtvec[validvec==TRUE],accvec[validvec==TRUE],lambda=ewma.control$lambda,c0=ewma.control$c0,sigma0=ewma.control$sigma0,L=ewma.control$L,abslower=rtmin) 
-			if(ewma.control$uselower==TRUE) rtmin = ewmastat$rtmin else rtmin = ewmastat$rtmax
-			
-			if(plot) {
-				plot(1:length(ewmastat$c),ewmastat$c,type='l',bty='n',xlab='RT',ylab='ewmastat',axes=F)
-				lines(ewmastat$UCL,lty=2,col='gray')
-				points(ewmastat$min,ewmastat$c[ewmastat$min],pch=19,col=3)
-				points(ewmastat$max,ewmastat$c[ewmastat$max],pch=19,col=2)
-				axis(2)
-				axis(1,at=c(1,round(median(1:length(ewmastat$c))),length(ewmastat$c)),label=c(ewmastat$rtvec[1],ewmastat$rtvec[round(median(1:length(ewmastat$c)))],ewmastat$rtvec[length(ewmastat$c)]))
-				ans = readline('Which threshold to use? [1=green][2=red] > ')
-				if(ans=='1') rtmin = ewmastat$rtmin
-				if(ans=='2') rtmin = ewmastat$rtmax
-			}
+			ewmastat = ewma(rtvec[validvec==TRUE],accvec[validvec==TRUE],lambda=ewma.control$lambda,c0=ewma.control$c0,sigma0=ewma.control$sigma0,L=ewma.control$L,abslower=rtmin,select=ewma.control$select) 
+			rtmin = ewmastat$rtuse
+		}
+
+		#check if rtmin is not larger than rtmax (else use rtmax as reference)
+		if(rtmin>rtmax) {
+			rtmin=rtmax
 		}
 		
 		.rtdata.valid(rtdat)[selvec][rtvec<rtmin] = FALSE
@@ -234,7 +230,7 @@ function(rtdat,which.condition=NULL,method.min=c('abs','sd','ewma'),method.max=c
 		
 		postlen.low = length(which(rtvec[which(validvec==TRUE)]<rtmin))
 		postlen.high = length(which(rtvec[which(validvec==TRUE)]>rtmax))
-		
+
 		outlier = new('outlier')
 		
 		.outlier.type(outlier) = paste('rtoutlier',sep='')
@@ -251,7 +247,7 @@ function(rtdat,which.condition=NULL,method.min=c('abs','sd','ewma'),method.max=c
 		.outlier.marked.values(outlier) = which(apply(cbind(pre.shadow,.rtdata.valid(rtdat)),1,sum)==1)
 		.outlier.selection.total(outlier) = length(selvec)
 		.outlier.selection.vector(outlier) = selvec
-		
+		.outlier.ewma.stats(outlier) = ewmastat
 		.outlier.remark(outlier) = paste(' [',rownames(totmat)[cond],'] removed ',.outlier.rem.total(outlier),' out of ',length(rtvec[validvec==TRUE]),' (',round(.outlier.rem.total(outlier) / length(rtvec[validvec==TRUE]),3),')',sep='')
 		
 		.rtdata.outliers(rtdat) = c(.rtdata.outliers(rtdat),outlier)
@@ -424,10 +420,10 @@ function(rtdat)
 
 
 ewma <-
-function(rtdata,accdata,lambda=.01,c0=.5,sigma0=.5,L=1.5,abslower=0) 
+function(rtdata,accdata,lambda=.01,c0=.5,sigma0=.5,L=1.5,abslower=0,select=F) 
 #ewma fast-guess removal (Vandekerckhove & Tuerlincks, 2007)
 {
-	
+
 	#input vectors are assumed to be VALID trials
 	rtvec = rtdata
 	cvec = accdata
@@ -447,15 +443,55 @@ function(rtdata,accdata,lambda=.01,c0=.5,sigma0=.5,L=1.5,abslower=0)
 	}
 	
 	#make on entire matrix
-	cv = (cs<UCLs)
-	mx = max(which(cv))
-	rtmax = rtvec[mx]
+	cvma = (cs<UCLs)
+	mx = suppressWarnings(max(which(cvma)))
+	rtmax = suppressWarnings(rtvec[mx])
 	
-	cv = !(cs<UCLs)
-	mn = min(which(cv))
-	rtmin = rtvec[mn]
+	cvmi = !(cs<UCLs)
+	mn = suppressWarnings(min(which(cvmi)))
+	rtmin = suppressWarnings(rtvec[mn])
+	
+	if(is.na(rtmin)) {
+		mn = length(rtvec)
+		rtmin = rtvec[mn]
+	}
+	
+	#switch when mn > mx
+	if(mn>mx) {
+		mx1 = mx
+		mx = mn
+		mn = mx1
+	}
+
+	#check results and return
+	if(mn<mx) {
+		#check distance to upper/lower bound
+		numbelow = sum(cs[mn:mx]<UCLs[mn:mx])
+		totdisthalve = length(cs[mn:mx])/2
 		
-	return(list(rtmin=rtmin,rtmax=rtmax,min=mn,max=mx,c=cs,UCL=UCLs,rtvec=rtvec,cvec=cvec))
+		if(numbelow>totdisthalve) {
+			rtuse = rtmin
+		} else {
+			if(numbelow<totdisthalve) rtuse = rtmax else rtuse = round((rtmin+rtmax)/2)
+		}
+		
+	} else rtuse = rtmin
+			
+	ewmastat = list(rtuse=rtuse,rtmin=rtmin,rtmax=rtmax,min=mn,max=mx,c=cs,UCL=UCLs,rtvec=rtvec,cvec=cvec)
+
+	if(select) {
+		plot(1:length(ewmastat$c),ewmastat$c,type='l',bty='n',xlab='RT',ylab='ewmastat',axes=F)
+		lines(ewmastat$UCL,lty=2,col='gray')
+		points(ewmastat$min,ewmastat$c[ewmastat$min],pch=19,col=3)
+		points(ewmastat$max,ewmastat$c[ewmastat$max],pch=19,col=2)
+		axis(2)
+		axis(1,at=c(1,round(median(1:length(ewmastat$c))),length(ewmastat$c)),label=c(ewmastat$rtvec[1],ewmastat$rtvec[round(median(1:length(ewmastat$c)))],ewmastat$rtvec[length(ewmastat$c)]))
+		ans = readline('Which threshold to use? [1=green][2=red] > ')
+		if(ans=='1') ewmastat$rtuse = ewmastat$rtmin
+		if(ans=='2') ewmastat$rtuse = ewmastat$rtmax
+	} 
+	
+	return(ewmastat)
 	
 }
 

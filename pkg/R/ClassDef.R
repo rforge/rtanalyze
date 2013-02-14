@@ -24,8 +24,8 @@ setClass(
 	prototype=prototype(
 		version=1,
 		build=1,
-		update=2,
-		svnrev=17
+		update=6,
+		svnrev=22
 	)#,
 	#package='RTanalyze'
 )
@@ -95,6 +95,7 @@ setClass(
 				selection.total = 'numeric',
 				selection.vector = 'numeric',
 				marked.values='numeric',
+				ewma.stats='ANY',
 				remark='character',
 				version='ANY'
 				),
