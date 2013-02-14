@@ -19,7 +19,7 @@
 
 
 summarize.subjects <-
-function(subject,which.within=numeric(0),FUN,useCorrect='true',which.between=numeric(0)) 
+function(subject,which.within=NULL,FUN,useCorrect='true',which.between=numeric(0)) 
 #summarize rt data on subjects objects (see methods for Generic), output in long format
 {
 	if(class(subject)!='subjects') stop('works only on \'subjects\' class objects.')

@@ -25,7 +25,7 @@ setClass(
 		version=1,
 		build=1,
 		update=6,
-		svnrev=22
+		svnrev=23
 	)#,
 	#package='RTanalyze'
 )
