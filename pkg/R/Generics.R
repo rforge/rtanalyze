@@ -230,6 +230,28 @@ standMethod <- function(x, value) {x@post.total<- value;x}
 setGeneric(slotreplace,standGen)
 setReplaceMethod(funcname,classname,standMethod)
 classname <-'outlier'
+funcname <-'.outlier.selection.total'
+standGen <- function(object) standardGeneric('.outlier.selection.total')
+standMethod <- function(object) object@selection.total
+setGeneric(funcname,standGen,package='rtanalyze')
+setMethod(funcname,classname,standMethod)
+slotreplace <-'.outlier.selection.total<-'
+standGen <- function(x, value) standardGeneric('.outlier.selection.total<-')
+standMethod <- function(x, value) {x@selection.total<- value;x}
+setGeneric(slotreplace,standGen)
+setReplaceMethod(funcname,classname,standMethod)
+classname <-'outlier'
+funcname <-'.outlier.selection.vector'
+standGen <- function(object) standardGeneric('.outlier.selection.vector')
+standMethod <- function(object) object@selection.vector
+setGeneric(funcname,standGen,package='rtanalyze')
+setMethod(funcname,classname,standMethod)
+slotreplace <-'.outlier.selection.vector<-'
+standGen <- function(x, value) standardGeneric('.outlier.selection.vector<-')
+standMethod <- function(x, value) {x@selection.vector<- value;x}
+setGeneric(slotreplace,standGen)
+setReplaceMethod(funcname,classname,standMethod)
+classname <-'outlier'
 funcname <-'.outlier.marked.values'
 standGen <- function(object) standardGeneric('.outlier.marked.values')
 standMethod <- function(object) object@marked.values
@@ -381,6 +403,17 @@ setMethod(funcname,classname,standMethod)
 slotreplace <-'.rtdata.rt<-'
 standGen <- function(x, value) standardGeneric('.rtdata.rt<-')
 standMethod <- function(x, value) {x@rt<- value;x}
+setGeneric(slotreplace,standGen)
+setReplaceMethod(funcname,classname,standMethod)
+classname <-'rtdata'
+funcname <-'.rtdata.rt.units'
+standGen <- function(object) standardGeneric('.rtdata.rt.units')
+standMethod <- function(object) object@rt.units
+setGeneric(funcname,standGen,package='rtanalyze')
+setMethod(funcname,classname,standMethod)
+slotreplace <-'.rtdata.rt.units<-'
+standGen <- function(x, value) standardGeneric('.rtdata.rt.units<-')
+standMethod <- function(x, value) {x@rt.units<- value;x}
 setGeneric(slotreplace,standGen)
 setReplaceMethod(funcname,classname,standMethod)
 classname <-'rtdata'

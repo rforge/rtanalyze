@@ -92,6 +92,8 @@ setClass(
 				rem.high='numeric',
 				rem.prop='numeric',
 				post.total='numeric',
+				selection.total = 'numeric',
+				selection.vector = 'numeric',
 				marked.values='numeric',
 				remark='character',
 				version='ANY'

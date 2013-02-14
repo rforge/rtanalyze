@@ -249,6 +249,9 @@ function(rtdat,which.condition=NULL,method.min=c('abs','sd','ewma'),method.max=c
 		.outlier.rem.prop(outlier) = .outlier.rem.total(outlier) / .outlier.pre.total(outlier)
 		.outlier.post.total(outlier) = length(.rtdata.rt(rtdat)[.rtdata.valid(rtdat)==TRUE])
 		.outlier.marked.values(outlier) = which(apply(cbind(pre.shadow,.rtdata.valid(rtdat)),1,sum)==1)
+		.outlier.selection.total(outlier) = length(selvec)
+		.outlier.selection.vector(outlier) = selvec
+		
 		.outlier.remark(outlier) = paste(' [',rownames(totmat)[cond],'] removed ',.outlier.rem.total(outlier),' out of ',length(rtvec[validvec==TRUE]),' (',round(.outlier.rem.total(outlier) / length(rtvec[validvec==TRUE]),3),')',sep='')
 		
 		.rtdata.outliers(rtdat) = c(.rtdata.outliers(rtdat),outlier)
