@@ -468,12 +468,12 @@ function(rtdata,accdata,lambda=.01,c0=.5,sigma0=.5,L=1.5,abslower=0,select=c('ma
 		totdisthalve = length(cs[mn:mx])/2
 		
 		if(numbelow>totdisthalve) {
-			rtuse = rtmin
-			pp = mn
+			rtuse = rtmax
+			pp = mx
 		} else {
 			if(numbelow<totdisthalve) {
-				rtuse = rtmax
-				pp = mx
+				rtuse = rtmin
+				pp = mn
 			} else {
 				rtuse = round((rtmin+rtmax)/2)
 				pp = round((mn+mx)/2)
