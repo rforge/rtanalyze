@@ -154,7 +154,7 @@ markWarmUp <- function(rtdat,at.each.condition=NULL,numtrials=5)
 }
 
 markOutliers <- 
-function(rtdat,which.condition=NULL,method.min=c('abs','sd','ewma'),method.max=c('abs','sd'),sdfac=3,rtmin=200,rtmax=2500,ewma.control=list(lambda=.01,c0=.5,sigma0=.5,L=1.5,select=F)) 
+function(rtdat,which.condition=NULL,method.min=c('abs','sd','ewma'),method.max=c('abs','sd'),sdfac=3,rtmin=200,rtmax=2500,ewma.control=ewma.control()) 
 #mark outliers based on on absolute values or SD
 {
 	
@@ -212,9 +212,7 @@ function(rtdat,which.condition=NULL,method.min=c('abs','sd','ewma'),method.max=c
 			rtmax = mean(rtvec[which(validvec==TRUE)])+sd(rtvec[which(validvec==TRUE)])*sdfac
 		}
 		
-		
 		ewmastat = NULL
-
 		if(method.min=='ewma') {
 			ewmastat = ewma(rtvec[validvec==TRUE],accvec[validvec==TRUE],lambda=ewma.control$lambda,c0=ewma.control$c0,sigma0=ewma.control$sigma0,L=ewma.control$L,abslower=rtmin,select=ewma.control$select) 
 			rtmin = ewmastat$rtuse
@@ -420,7 +418,7 @@ function(rtdat)
 
 
 ewma <-
-function(rtdata,accdata,lambda=.01,c0=.5,sigma0=.5,L=1.5,abslower=0,select=F) 
+function(rtdata,accdata,lambda=.01,c0=.5,sigma0=.5,L=1.5,abslower=0,select=c('manual','auto','autoplot')) 
 #ewma fast-guess removal (Vandekerckhove & Tuerlincks, 2007)
 {
 
@@ -471,33 +469,59 @@ function(rtdata,accdata,lambda=.01,c0=.5,sigma0=.5,L=1.5,abslower=0,select=F)
 		
 		if(numbelow>totdisthalve) {
 			rtuse = rtmin
+			pp = mn
 		} else {
-			if(numbelow<totdisthalve) rtuse = rtmax else rtuse = round((rtmin+rtmax)/2)
+			if(numbelow<totdisthalve) {
+				rtuse = rtmax
+				pp = mx
+			} else {
+				rtuse = round((rtmin+rtmax)/2)
+				pp = round((mn+mx)/2)
+			}
 		}
-		
-	} else rtuse = rtmin
+	} else {
+		rtuse = rtmin
+		pp = mn
+	}
 			
-	ewmastat = list(rtuse=rtuse,rtmin=rtmin,rtmax=rtmax,min=mn,max=mx,c=cs,UCL=UCLs,rtvec=rtvec,cvec=cvec)
+	ewmastat = list(rtuse=rtuse,rtmin=rtmin,rtmax=rtmax,min=mn,max=mx,c=cs,UCL=UCLs,rtvec=rtvec,cvec=cvec,usepos=pp)
 
-	if(select) {
+	
+	if(select!='auto') {
 		plot(1:length(ewmastat$c),ewmastat$c,type='l',bty='n',xlab='RT',ylab='ewmastat',axes=F)
 		lines(ewmastat$UCL,lty=2,col='gray')
 		points(ewmastat$min,ewmastat$c[ewmastat$min],pch=19,col=3)
 		points(ewmastat$max,ewmastat$c[ewmastat$max],pch=19,col=2)
 		axis(2)
 		axis(1,at=c(1,round(median(1:length(ewmastat$c))),length(ewmastat$c)),label=c(ewmastat$rtvec[1],ewmastat$rtvec[round(median(1:length(ewmastat$c)))],ewmastat$rtvec[length(ewmastat$c)]))
-		ans = readline('Which threshold to use? [1=green][2=red] > ')
-		if(ans=='1') ewmastat$rtuse = ewmastat$rtmin
-		if(ans=='2') ewmastat$rtuse = ewmastat$rtmax
-	} 
-	
+		
+		if(select=='manual') {
+			ans = readline('Which threshold to use? [1=green][2=red] > ')
+			if(ans=='1') ewmastat$rtuse = ewmastat$rtmin
+			if(ans=='2') ewmastat$rtuse = ewmastat$rtmax
+		} else {
+			points(ewmastat$usepos,ewmastat$c[ewmastat$usepos],pch=6,col=4,cex=1.2,lwd=2)
+			ans = readline('ok? [y/n] ')
+			if(ans=='n') {
+				ans = readline('Which threshold to use? [1=green][2=red] > ')
+				if(ans=='1') ewmastat$rtuse = ewmastat$rtmin
+				if(ans=='2') ewmastat$rtuse = ewmastat$rtmax
+			} 
+		}
+	}
+		
 	return(ewmastat)
 	
 }
 
+ewma.control <- function(lambda=.01,c0=.5,sigma0=.5,L=1.5,select='auto') 
+#default ewma control list
+{
+	return(list(lambda=lambda,c0=c0,sigma0=sigma0,L=L,select=select))
+}
 
 overall <- function(rtdat,add=T) 
-#add a 'ghost' overall condtions
+#add a 'ghost' overall condtions (or remove it)
 {
 
 	if(add) {
@@ -508,44 +532,4 @@ overall <- function(rtdat,add=T)
 	}
 	
 	return(rtdat)
-}
-
-cormat.test <- 
-function(datavecs,pretty.out=FALSE,rnd=2)
-#test the correlation matrix for significance
-{
-	names = colnames(datavecs)
-	cm = matrix(NA,ncol(datavecs),ncol(datavecs))
-	
-	for(row in 1:(ncol(datavecs)-1)) {
-		for(col in (row+1):(ncol(datavecs))) {
-			ct = cor.test(datavecs[,row],datavecs[,col])
-			cm[row,col]=ct$estimate
-			cm[col,row]=ct$p.value
-		}
-	}
-	
-	dimnames(cm)=list(names,names)
-	
-	if(pretty.out) {
-		names = dimnames(cm)[[1]]
-		len = ((ncol(datavecs)^2)-ncol(datavecs))/2
-		prdata = data.frame(estimate=numeric(len),p.value=numeric(len))
-		
-		cnt=1
-		for(row in 1:(ncol(datavecs)-1)) {
-			for(col in (row+1):(ncol(datavecs))) {
-				dimnames(prdata)[[1]][cnt] = paste(names[row],' - ',names[col],sep='')
-				prdata[cnt,1] = round(cm[row,col],rnd)
-				prdata[cnt,2] = round(cm[col,row],rnd)
-				cnt = cnt + 1
-			}
-		}
-		
-		return(prdata)
-		
-	}
-	
-	return(cm)		
-	
 }

@@ -10,7 +10,7 @@ export(
 	markSubjects,
 	showOutliers,
 	ewma,
-	cormat.test,
+	ewma.control,
 	summarize.subjects,
 	aggregate.rtdata,
 	pc,
