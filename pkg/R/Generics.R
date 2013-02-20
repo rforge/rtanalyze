@@ -87,6 +87,17 @@ standMethod <- function(x, value) {x@rtdata<- value;x}
 setGeneric(slotreplace,standGen)
 setReplaceMethod(funcname,classname,standMethod)
 classname <-'subjects'
+funcname <-'.subjects.fdmdata'
+standGen <- function(object) standardGeneric('.subjects.fdmdata')
+standMethod <- function(object) object@fdmdata
+setGeneric(funcname,standGen,package='rtanalyze')
+setMethod(funcname,classname,standMethod)
+slotreplace <-'.subjects.fdmdata<-'
+standGen <- function(x, value) standardGeneric('.subjects.fdmdata<-')
+standMethod <- function(x, value) {x@fdmdata<- value;x}
+setGeneric(slotreplace,standGen)
+setReplaceMethod(funcname,classname,standMethod)
+classname <-'subjects'
 funcname <-'.subjects.valid'
 standGen <- function(object) standardGeneric('.subjects.valid')
 standMethod <- function(object) object@valid
@@ -692,6 +703,28 @@ standMethod <- function(x, value) {x@outputname<- value;x}
 setGeneric(slotreplace,standGen)
 setReplaceMethod(funcname,classname,standMethod)
 classname <-'fastdm'
+funcname <-'.fastdm.bootstrap.type'
+standGen <- function(object) standardGeneric('.fastdm.bootstrap.type')
+standMethod <- function(object) object@bootstrap.type
+setGeneric(funcname,standGen,package='rtanalyze')
+setMethod(funcname,classname,standMethod)
+slotreplace <-'.fastdm.bootstrap.type<-'
+standGen <- function(x, value) standardGeneric('.fastdm.bootstrap.type<-')
+standMethod <- function(x, value) {x@bootstrap.type<- value;x}
+setGeneric(slotreplace,standGen)
+setReplaceMethod(funcname,classname,standMethod)
+classname <-'fastdm'
+funcname <-'.fastdm.bootstrap.num'
+standGen <- function(object) standardGeneric('.fastdm.bootstrap.num')
+standMethod <- function(object) object@bootstrap.num
+setGeneric(funcname,standGen,package='rtanalyze')
+setMethod(funcname,classname,standMethod)
+slotreplace <-'.fastdm.bootstrap.num<-'
+standGen <- function(x, value) standardGeneric('.fastdm.bootstrap.num<-')
+standMethod <- function(x, value) {x@bootstrap.num<- value;x}
+setGeneric(slotreplace,standGen)
+setReplaceMethod(funcname,classname,standMethod)
+classname <-'fastdm'
 funcname <-'.fastdm.subjectlist'
 standGen <- function(object) standardGeneric('.fastdm.subjectlist')
 standMethod <- function(object) object@subjectlist
@@ -777,5 +810,27 @@ setMethod(funcname,classname,standMethod)
 slotreplace <-'.fdmoutput.bootstrapdata<-'
 standGen <- function(x, value) standardGeneric('.fdmoutput.bootstrapdata<-')
 standMethod <- function(x, value) {x@bootstrapdata<- value;x}
+setGeneric(slotreplace,standGen)
+setReplaceMethod(funcname,classname,standMethod)
+classname <-'fdmoutput'
+funcname <-'.fdmoutput.outputlog'
+standGen <- function(object) standardGeneric('.fdmoutput.outputlog')
+standMethod <- function(object) object@outputlog
+setGeneric(funcname,standGen,package='rtanalyze')
+setMethod(funcname,classname,standMethod)
+slotreplace <-'.fdmoutput.outputlog<-'
+standGen <- function(x, value) standardGeneric('.fdmoutput.outputlog<-')
+standMethod <- function(x, value) {x@outputlog<- value;x}
+setGeneric(slotreplace,standGen)
+setReplaceMethod(funcname,classname,standMethod)
+classname <-'fdmoutput'
+funcname <-'.fdmoutput.version'
+standGen <- function(object) standardGeneric('.fdmoutput.version')
+standMethod <- function(object) object@version
+setGeneric(funcname,standGen,package='rtanalyze')
+setMethod(funcname,classname,standMethod)
+slotreplace <-'.fdmoutput.version<-'
+standGen <- function(x, value) standardGeneric('.fdmoutput.version<-')
+standMethod <- function(x, value) {x@version<- value;x}
 setGeneric(slotreplace,standGen)
 setReplaceMethod(funcname,classname,standMethod)

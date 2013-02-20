@@ -24,8 +24,8 @@ setClass(
 	prototype=prototype(
 		version=1,
 		build=1,
-		update=7,
-		svnrev=25
+		update=8,
+		svnrev=26
 	)#,
 	#package='RTanalyze'
 )
@@ -39,6 +39,7 @@ setClass(
 				variables='data.frame',			#between-subject variables values (ID plus factors and covariates)
 				variable.levels = 'ANY',		#b-s variable levels
 				rtdata='ANY',					#list of rtdata objects
+				fdmdata='ANY',					#list of fmddata objects
 				valid='logical',				#is subject valid
 				outliers='list',
 				remarks='character',			#remarks
@@ -135,6 +136,7 @@ setClass(
 		
 		),
 		prototype=prototype(
+				rt.units = 'ms',
 				version=new('version')
 		
 		)#,
@@ -171,6 +173,8 @@ setClass(
 				datadir = 'character',
 				dataname='character',
 				outputname='character',
+				bootstrap.type='character',
+				bootstrap.num = 'numeric',
 				subjectlist='character',
 				appdir = 'character'
 		),
@@ -182,6 +186,8 @@ setClass(
 				dataname = 'ppn*.txt',
 				outputname = 'results_ppn*.txt',
 				appdir = '/Applications/fast-dm-29/',
+				bootstrap.type = 'det',
+				bootstrap.num = 1,
 				subjectlist= '',
 				datadir = ''
 		)
@@ -196,7 +202,12 @@ setClass(
 				data='ANY',
 				parameters='ANY',
 				estimates='ANY',
-				bootstrapdata='ANY'
-		)
+				bootstrapdata='ANY',
+				outputlog = 'ANY',
+				version = 'ANY'
+		),
+		prototype=prototype(
+			version=new('version')
+	)
 )
 

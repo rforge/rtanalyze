@@ -7,6 +7,7 @@ exportMethods(
 .subjects.variables,
 .subjects.variable.levels,
 .subjects.rtdata,
+.subjects.fdmdata,
 .subjects.valid,
 .subjects.outliers,
 .subjects.remarks,
@@ -62,6 +63,8 @@ exportMethods(
 .fastdm.datadir,
 .fastdm.dataname,
 .fastdm.outputname,
+.fastdm.bootstrap.type,
+.fastdm.bootstrap.num,
 .fastdm.subjectlist,
 .fastdm.appdir,
 .fdmoutput.ID,
@@ -70,4 +73,6 @@ exportMethods(
 .fdmoutput.parameters,
 .fdmoutput.estimates,
 .fdmoutput.bootstrapdata,
+.fdmoutput.outputlog,
+.fdmoutput.version,
 )

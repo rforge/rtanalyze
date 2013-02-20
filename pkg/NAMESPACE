@@ -12,6 +12,7 @@ export(
 	ewma,
 	ewma.control,
 	summarize.subjects,
+	summarize,
 	aggregate.rtdata,
 	pc,
 	summary.rtdata,
@@ -25,12 +26,14 @@ export(
 	plot.sat,
 	wpr,
 	export.rt,
+	fitDiffusionModel,
 	doexp,
 	makeconditionarray,
 	getdepends,
 	getestimates,
 	getsamples,
 	makefitarray,
+	make.estimate.array,
 	simulatesamples
 )
 

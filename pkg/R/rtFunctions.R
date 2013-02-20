@@ -43,16 +43,17 @@ function(subject,which.within=NULL,FUN,useCorrect='true',which.between=numeric(0
 		}
 		
 		#get subject variables
-		sdat = matrix(.subjects.variables(subject)[whichsubjects[i],],nrow=nrow(summary.rtdata),ncol=length(.subjects.variables(subject)[whichsubjects[i],]),byrow=T)
+		sdat = .subjects.variables(subject)[whichsubjects[i],]
+		if(nrow(summary.rtdata)>1) {
+			for(j in 2:nrow(summary.rtdata)) {
+				sdat = rbind(sdat,.subjects.variables(subject)[whichsubjects[i],])
+			}
+		}
+	
 		#add value
 		sdat = cbind(sdat,summary.rtdata)
 		summary.subject = rbind(summary.subject,sdat)
 		
-	}
-	
-	#reset between subject variables as factors
-	for(col in 1:ncol(.subjects.variables(subject))) {
-		summary.subject[,col] = as.factor(unlist(summary.subject[,col]))
 	}
 	
 	#set new names
@@ -60,11 +61,12 @@ function(subject,which.within=NULL,FUN,useCorrect='true',which.between=numeric(0
 	newname[length(newname)] = as.character(match.call()$FUN)
 	names(summary.subject) = newname
 	
-	
-	
 	return(summary.subject)
 	
 }
+
+summarize <- function(...) summarize.subjects(...)
+	
 
 aggregate.rtdata <-
 function(rtdat,which=NULL,FUN,useCorrect=c('both','true','false','none')) 
@@ -203,12 +205,10 @@ function(rtdat,which=NULL,pc=FALSE)
 
 
 quantile.rtdata <-
-function(rtdat,which=numeric(0),quantiles=c(.1,.3,.5,.7,.9),useCorrect='both',onlyQs=FALSE)
+function(rtdat,which=NULL,quantiles=c(.1,.3,.5,.7,.9),useCorrect='both',onlyQs=FALSE)
 {
 	if(class(rtdat)!='rtdata') stop('quantile.rtdata() works only on \'rtdata\' class objects.')
 
-	
-	
 	#define mean and quantdata
 	meandata = aggregate.rtdata(rtdat,which,length,useCorrect=useCorrect)
 	quant.data = n.quant.data = matrix(NA,nrow(meandata),length(quantiles))
