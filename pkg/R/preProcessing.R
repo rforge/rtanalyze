@@ -217,7 +217,7 @@ function(rtdat,which.condition=NULL,method.min=c('abs','sd','ewma'),method.max=c
 			ewmastat = ewma(rtvec[validvec==TRUE],accvec[validvec==TRUE],lambda=ewma.control$lambda,c0=ewma.control$c0,sigma0=ewma.control$sigma0,L=ewma.control$L,abslower=rtmin,select=ewma.control$select) 
 			rtmin = ewmastat$rtuse
 		}
-
+				
 		#check if rtmin is not larger than rtmax (else use rtmax as reference)
 		if(rtmin>rtmax) {
 			rtmin=rtmax
@@ -243,8 +243,8 @@ function(rtdat,which.condition=NULL,method.min=c('abs','sd','ewma'),method.max=c
 		.outlier.rem.prop(outlier) = .outlier.rem.total(outlier) / .outlier.pre.total(outlier)
 		.outlier.post.total(outlier) = length(.rtdata.rt(rtdat)[.rtdata.valid(rtdat)==TRUE])
 		.outlier.marked.values(outlier) = which(apply(cbind(pre.shadow,.rtdata.valid(rtdat)),1,sum)==1)
-		.outlier.selection.total(outlier) = length(selvec)
-		.outlier.selection.vector(outlier) = selvec
+		.outlier.selection.total(outlier) = length(rtvec[validvec==TRUE])
+		.outlier.selection.vector(outlier) = selvec[validvec==TRUE]
 		.outlier.ewma.stats(outlier) = ewmastat
 		.outlier.remark(outlier) = paste(' [',rownames(totmat)[cond],'] removed ',.outlier.rem.total(outlier),' out of ',length(rtvec[validvec==TRUE]),' (',round(.outlier.rem.total(outlier) / length(rtvec[validvec==TRUE]),3),')',sep='')
 		

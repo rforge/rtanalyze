@@ -60,7 +60,7 @@ fitDiffusionModel <- function(rtdat,fdmobject,ID,onlyreadoutput=F,removeAfterUse
 
 doexp <- function(fdmex,subject.indicator=NULL,bootstrapnum=1,runfdm=T,removeAfterUse=T) 
 {
-	cat(' [fast-dm] Fitting subject',subject.indicator,'...\n')
+	cat('[fast-dm] Fitting subject',subject.indicator,'...\n')
 		
 	#make experiment file based on fastdm object
 	writestring = character(0)
@@ -129,7 +129,7 @@ doexp <- function(fdmex,subject.indicator=NULL,bootstrapnum=1,runfdm=T,removeAft
 	
 	#get all estimates in the right order and estimate forward data	
 	dependent = getdepends(fdmex,dat,out)		
-	estimates = getestimates(fdmex,out,dependent)		
+	estimates = getestimates(fdmex,out,dependent$outmat,dependent$levelmat)		
 	sampledata = getsamples(fdmex,dat,estimates,bootstrapnum,T,subject.indicator,runfdm)
 	
 	fdmout = new('fdmoutput')
@@ -224,11 +224,11 @@ getdepends <- function(fdmex,dat,out,parameters=c('v','a','t0','z','sz','st0','s
 		}
 	}
 	
-	return(outmat)
+	return(list(outmat=outmat,levelmat=data.frame(totmat)))
 }
 
 
-getestimates <- function(fdmex,out,dependsmatrix) 
+getestimates <- function(fdmex,out,dependsmatrix,levelmat) 
 {
 	estmatrix = matrix(NA,nrow(dependsmatrix),ncol(dependsmatrix),dimnames=list(rownames(dependsmatrix),colnames(dependsmatrix)))
 	paramvec = colnames(dependsmatrix)
@@ -252,11 +252,9 @@ getestimates <- function(fdmex,out,dependsmatrix)
 		}
 	}
 	
-	#addmat = cbind(rep(out[grep('\\<p\\>',as.character(out[,1])),2],nrow(estmatrix)),rep(out[grep('\\<precision\\>',as.character(out[,1])),2],nrow(estmatrix)),rep(out[grep('\\<time\\>',as.character(out[,1])),2],nrow(estmatrix)))
-	#dimnames(addmat) = list(rownames(estmatrix),c('p','precision','time'))
-	#estmatrix = cbind(estmatrix,addmat)
+	outmat = cbind(levelmat,estmatrix)
 	
-	return(estmatrix)
+	return(outmat)
 	
 }
 
@@ -331,7 +329,7 @@ function(fdmex,subject.indicator=NULL,fixedlist=NULL,bootstrapnum=1)
 	
 	#get all estimates in the right order and estimate forward data	
 	dependent = getdepends(fdmex,dat,out)		
-	estimates = getestimates(fdmex,out,dependent)		
+	estimates = getestimates(fdmex,out,dependent$outmat,dependent$levelmat)		
 	
 	#run through the fixedlist (named list [1]=parameter, [2]=condition, [3]=value)
 	if(!is.null(fixedlist)) {
@@ -399,7 +397,29 @@ makefitarray <- function(fdmdata,FUN)
 	
 }
 
-make.estimate.array <- function(subjectdata) 
+summarize.diffmod <- function(subjectdata) 
+#get all diffusionmodel estimates
 {
-	cat('getallestimates\n')
+	subs = which(.subjects.valid(subjectdata)==TRUE)
+	
+	summary.dif = numeric(0)
+	
+	for(i in 1:length(subs)) {
+		
+		sumdif = .fdmoutput.estimates(.subjects.fdmdata(subjectdata)[[subs[i]]])
+	
+		sdat = .subjects.variables(subjectdata)[subs[i],]
+		if(nrow(sumdif)>1) {
+			for(j in 2:nrow(sumdif)) {
+				sdat = rbind(sdat,.subjects.variables(subjectdata)[subs[i],])
+			}
+		}
+		
+		sdat = cbind(sdat,sumdif)
+		summary.dif = rbind(summary.dif,sdat)
+	
+	}
+	
+	return(summary.dif)
+	
 }

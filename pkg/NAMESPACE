@@ -11,6 +11,7 @@ export(
 	showOutliers,
 	ewma,
 	ewma.control,
+	overall,
 	summarize.subjects,
 	summarize,
 	aggregate.rtdata,
@@ -33,7 +34,7 @@ export(
 	getestimates,
 	getsamples,
 	makefitarray,
-	make.estimate.array,
+	summarize.diffmod,
 	simulatesamples
 )
 
