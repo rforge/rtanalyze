@@ -108,6 +108,8 @@ markWarmUp <- function(rtdat,at.each.condition=NULL,numtrials=5)
 	pre.shadow = .rtdata.valid(rtdat)
 	
 	count_postWU = 0
+	condind = numeric(0)
+	
 	
 	if(!is.null(at.each.condition)) {
 		
@@ -186,6 +188,9 @@ function(rtdat,which.condition=NULL,method.min=c('abs','sd','ewma'),method.max=c
 	
 	for(cond in 1:dim(totmat)[1])	{
 	
+		#make selve empty
+		selvec = numeric(0)
+		
 		evstring = paste('selvec = which(rtdat@conditions$`',condnames[1],'`==\'',totmat[cond,1],'\'',sep='')
 		if(length(condnames)>1) {
 			for(i in 2:length(condnames)) {
@@ -268,6 +273,7 @@ markCondition <- function(rtdat,condition,value)
 	
 	count_postCR = 0
 	
+	selected = numeric(0)
 	
 	if(!is.null(condition) & !is.null(value)) {
 		for(i in 1:length(condition)) 
@@ -324,6 +330,7 @@ markSubjects <- function(subject,FUN,criterionlist,which.within=numeric(0),useCo
 	#get valid subjects
 	whichsubjects = which(.subjects.valid(subject)==TRUE)
 	marked = numeric(0)
+	remarks = character(0)
 	
 	for(i in 1:length(whichsubjects)) 
 	{
@@ -367,7 +374,7 @@ markSubjects <- function(subject,FUN,criterionlist,which.within=numeric(0),useCo
 	}
 
 	#store information on outlier object
-	outliers = new(subjectoutlier)
+	outliers = new('subjectoutlier')
 	
 	.subjectoutlier.FUN(outliers) = as.character(match.call()$FUN) 
 	.subjectoutlier.which(outliers) = which.within
@@ -493,7 +500,7 @@ function(rtdata,accdata,lambda=.01,c0=.5,sigma0=.5,L=1.5,abslower=0,select=c('ma
 		points(ewmastat$min,ewmastat$c[ewmastat$min],pch=19,col=3)
 		points(ewmastat$max,ewmastat$c[ewmastat$max],pch=19,col=2)
 		axis(2)
-		axis(1,at=c(1,round(median(1:length(ewmastat$c))),length(ewmastat$c)),label=c(ewmastat$rtvec[1],ewmastat$rtvec[round(median(1:length(ewmastat$c)))],ewmastat$rtvec[length(ewmastat$c)]))
+		axis(1,at=c(1,round(median(1:length(ewmastat$c))),length(ewmastat$c)),labels=c(ewmastat$rtvec[1],ewmastat$rtvec[round(median(1:length(ewmastat$c)))],ewmastat$rtvec[length(ewmastat$c)]))
 		
 		if(select=='manual') {
 			ans = readline('Which threshold to use? [1=green][2=red] > ')

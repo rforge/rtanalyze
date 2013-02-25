@@ -71,20 +71,20 @@ setMethod('[','rtdata',
 )
 setMethod('[[','rtdata',
 		function(x,i,j,drop='missing') {
-			dat = data.frame(x@conditions,correct=x@correct,rt=x@rt,valid=object@valid)
+			dat = data.frame(x@conditions,correct=x@correct,rt=x@rt,valid=x@valid)
 			return(eval(parse(text=paste('dat[[',i,']]',sep=''))))
 		}
 )
 setMethod('$<-','rtdata',
 		function(x,name,value) {
-			dat = data.frame(x@conditions,correct=x@correct,rt=x@rt,valid=object@valid)
+			dat = data.frame(x@conditions,correct=x@correct,rt=x@rt,valid=x@valid)
 			eval(parse(text=paste('dat$',name,'<-value',sep='')))
 			return(dat)
 		}
 )
 setMethod('[<-','rtdata',
 		function(x,i,j,value,drop='missing') {
-			dat = data.frame(x@conditions,correct=x@correct,rt=x@rt,valid=object@valid)
+			dat = data.frame(x@conditions,correct=x@correct,rt=x@rt,valid=x@valid)
 			if(missing(i)) i = NULL
 			if(missing(j)) j = NULL
 			eval(parse(text=paste('dat[',i,',',j,']<-value',sep='')))
@@ -93,7 +93,7 @@ setMethod('[<-','rtdata',
 )
 setMethod('[[<-','rtdata',
 		function(x,i,j,value,drop='missing') {
-			dat = data.frame(x@conditions,correct=x@correct,rt=x@rt,valid=object@valid)
+			dat = data.frame(x@conditions,correct=x@correct,rt=x@rt,valid=x@valid)
 			eval(parse(text=paste('dat[[',i,']]<-value',sep='')))
 			return(dat)
 		}

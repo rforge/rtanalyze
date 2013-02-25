@@ -87,10 +87,10 @@ function(dir,patt='.Rda',bs_conditions=NULL,expname='default experiment',markOut
 	#make rtdata list (with names)
 	numsubs = length(list.files(dir,patt))
 	rtdatas = vector('list',numsubs)
-	names(rtdatas) = strsplit(list.files(dir,patt,full=F),'.Rda')
+	names(rtdatas) = strsplit(list.files(dir,patt,full.names=F),'.Rda')
 	
 	#read in the files, preprocess and add to rtdata list
-	filelist = list.files(dir,patt,full=T)
+	filelist = list.files(dir,patt,full.names=T)
 	for(file in 1:numsubs) {
 		load(filelist[file])
 		if(markOutliers) rtdata = markOutliers(rtdata,method=ol.method,rtmin=ol.rtmin,rtmax=ol.rtmax)

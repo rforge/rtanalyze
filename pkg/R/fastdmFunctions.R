@@ -29,6 +29,8 @@ fitDiffusionModel <- function(rtdat,fdmobject,ID,onlyreadoutput=F,removeAfterUse
 	#get condition names
 	which.within=.fastdm.conditions(fdmobject)
 	
+	cvec = character(0)
+	
 	#make cvec
 	eval(parse(text=paste('cvec = as.character(rtdat$`',which.within[1],'`[.rtdata.valid(rtdat)==TRUE])',sep='')))
 	if(length(which.within)>1) {
@@ -267,6 +269,8 @@ getsamples <- function(fdmex,dat,estimatematrix,bootstraps=1,deterministic=F,sub
 	totlev = makelevels(fdmex@conditions,dat)
 	totmat = makeconditionarray(fdmex@conditions,totlev)
 	
+	samplen = numeric(0)
+	
 	for(cond in 1:length(sampledat)) 
 	{
 		
@@ -368,6 +372,7 @@ makefitarray <- function(fdmdata,FUN)
 	outmat = modmat = as.data.frame(matrix(NA,length(dmcondnames),3,dimnames=list(dmcondnames,funname)))
 
 	data = fdmdata@data
+	dat = numeric(0)
 	
 	for(dmcond in 1:dim(totmat)[1])	{
 		evstring = paste('dat = data[data$`',condnames[1],'`==\'',totmat[dmcond,1],'\'',sep='')
