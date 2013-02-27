@@ -30,6 +30,7 @@ export(
 	fitDiffusionModel,
 	doexp,
 	makeconditionarray,
+	makelevels,
 	getdepends,
 	getestimates,
 	getsamples,
