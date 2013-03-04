@@ -186,6 +186,32 @@ function(rtdat,which.condition=NULL,method.min=c('abs','sd','ewma'),method.max=c
 	
 	condnames = colnames(totmat)
 	
+	if(method.min=='abs') {
+		if(length(rtmin)==1) {
+			rtminvec = rep(rtmin,dim(totmat)[1])
+			warning('Recycling rtmin values for all levels.')
+		} else {
+			if(length(rtmin)!=dim(totmat)[1]) {
+				stop('Length of rtmin not equal to number of levels!')
+			} else {
+				rtminvec = rtmin
+			}
+		}
+	}
+	
+	if(method.max=='abs') {
+		if(length(rtmax)==1) {
+			rtmaxvec = rep(rtmax,dim(totmat)[1])
+			warning('Recycling rtmax values for all levels.')
+		} else {
+			if(length(rtmax)!=dim(totmat)[1]) {
+				stop('Length of rtmax not equal to number of levels!')
+			} else {
+				rtmaxvec = rtmax
+			}
+		}
+	}
+	
 	for(cond in 1:dim(totmat)[1])	{
 	
 		#make selve empty
@@ -209,6 +235,17 @@ function(rtdat,which.condition=NULL,method.min=c('abs','sd','ewma'),method.max=c
 		accvec = .rtdata.correct(rtdat)[selvec]
 		validvec = .rtdata.valid(rtdat)[selvec]
 		
+		rtmin=0
+		rtmax=0
+		
+		if(method.min=='abs') {
+			rtmin = rtminvec[cond]
+		}
+		
+		if(method.max=='abs') {
+			rtmax = rtmaxvec[cond]
+		}
+				
 		if(method.min=='sd') {
 			rtmin = mean(rtvec[which(validvec==TRUE)])-sd(rtvec[which(validvec==TRUE)])*sdfac
 		}
@@ -539,4 +576,31 @@ overall <- function(rtdat,add=T)
 	}
 	
 	return(rtdat)
+}
+
+showLevels <- function(rtdat,which.condition) {
+	
+	if(missing(which.condition)) which.condition=NULL
+	
+	if(is.null(which.condition)) {
+		rtdat = overall(rtdat,TRUE)
+		which.condition = names(.rtdata.conditions(rtdat))[dim(.rtdata.conditions(rtdat))[2]]
+		remov = TRUE
+	} else remov = FALSE
+	
+	if(is.numeric(which.condition)) {
+		dat = data.frame(.rtdata.conditions(rtdat)[,which.condition]) 
+		names(dat) = which.condition
+		totlev = makelevels(names(.rtdata.conditions(rtdat)==which.condition),dat)
+		totmat = makeconditionarray(names(.rtdata.conditions(rtdat)==which.condition),totlev)
+		
+	} else {
+		dat = data.frame(.rtdata.conditions(rtdat)[,match(which.condition,names(.rtdata.conditions(rtdat)))])
+		names(dat) = which.condition
+		totlev = makelevels(which.condition,dat)
+		totmat = makeconditionarray(which.condition,totlev)
+	}
+	
+	return(totmat)
+	
 }

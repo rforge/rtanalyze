@@ -12,6 +12,7 @@ export(
 	ewma,
 	ewma.control,
 	overall,
+	showLevels,
 	summarize.subjects,
 	summarize,
 	aggregate.rtdata,
