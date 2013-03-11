@@ -118,7 +118,7 @@ markWarmUp <- function(rtdat,at.each.condition=NULL,numtrials=5)
 		
 		for(level in 1:length(condind)) 
 		{
-			parsetext = paste('.rtdata.valid(rtdat)[.rtdata.conditions(rtdat)$`',at.each.condition,'`==',condind[level],'][1:',numtrials,']=FALSE',sep='')
+			parsetext = paste('.rtdata.valid(rtdat)[.rtdata.conditions(rtdat)$`',at.each.condition,'`==\'',condind[level],'\'][1:',numtrials,']=FALSE',sep='')
 			eval(parse(text=parsetext))
 			
 			count_postWU = count_postWU + length(1:numtrials)
