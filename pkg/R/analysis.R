@@ -8,7 +8,7 @@
 
 #CONTAINS
 #checkSubjects
-#export.rt (longform)
+#export.rt (longform) #DEFUNCT
 #wpr
 
 checkSubjects <-

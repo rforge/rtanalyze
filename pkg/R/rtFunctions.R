@@ -68,6 +68,18 @@ function(subject,which.within=NULL,FUN,useCorrect='true',which.between=numeric(0
 summarize <- function(...) summarize.subjects(...)
 	
 
+
+long2wide <- function(dframe,ID,indicators) 
+#make a long data.frame into a wide one
+{
+	
+	
+	
+	
+	
+	
+}
+
 aggregate.rtdata <-
 function(rtdat,which=NULL,FUN,useCorrect=c('both','true','false','none')) 
 #wrapper for aggregate called on rtdata objects (see methods for Generic).

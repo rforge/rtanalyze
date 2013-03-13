@@ -15,6 +15,7 @@ export(
 	showLevels,
 	summarize.subjects,
 	summarize,
+	long2wide,
 	aggregate.rtdata,
 	pc,
 	summary.rtdata,
