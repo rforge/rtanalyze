@@ -256,7 +256,7 @@ function(rtdat,which.condition=NULL,method.min=c('abs','sd','ewma'),method.max=c
 		
 		ewmastat = NULL
 		if(method.min=='ewma') {
-			ewmastat = ewma(rtvec[validvec==TRUE],accvec[validvec==TRUE],lambda=ewma.control$lambda,c0=ewma.control$c0,sigma0=ewma.control$sigma0,L=ewma.control$L,abslower=rtmin,select=ewma.control$select) 
+			ewmastat = ewma(rtvec[validvec==TRUE],accvec[validvec==TRUE],lambda=ewma.control$lambda,c0=ewma.control$c0,sigma0=ewma.control$sigma0,L=ewma.control$L,abslower=rtmin,select=ewma.control$select,order.rt=ewma.control$order) 
 			rtmin = ewmastat$rtuse
 		}
 				
@@ -462,7 +462,7 @@ function(rtdat)
 
 
 ewma <-
-function(rtdata,accdata,lambda=.01,c0=.5,sigma0=.5,L=1.5,abslower=0,select=c('manual','auto','autoplot')) 
+function(rtdata,accdata,lambda=.01,c0=.5,sigma0=.5,L=1.5,abslower=0,select=c('manual','auto','autoplot'),order.rt=T) 
 #ewma fast-guess removal (Vandekerckhove & Tuerlincks, 2007)
 {
 
@@ -471,7 +471,7 @@ function(rtdata,accdata,lambda=.01,c0=.5,sigma0=.5,L=1.5,abslower=0,select=c('ma
 	cvec = accdata
 	
 	#order rtvecs
-	o = order(rtvec)
+	if(order.rt) o = order(rtvec) else o = 1:length(rtvec)
 	rtvec = rtvec[o]
 	cvec = cvec[o]
 	
@@ -558,10 +558,10 @@ function(rtdata,accdata,lambda=.01,c0=.5,sigma0=.5,L=1.5,abslower=0,select=c('ma
 	
 }
 
-ewma.control <- function(lambda=.01,c0=.5,sigma0=.5,L=1.5,select='auto') 
+ewma.control <- function(lambda=.01,c0=.5,sigma0=.5,L=1.5,select='auto',order.rt=TRUE) 
 #default ewma control list
 {
-	return(list(lambda=lambda,c0=c0,sigma0=sigma0,L=L,select=select))
+	return(list(lambda=lambda,c0=c0,sigma0=sigma0,L=L,select=select,order.rt=order.rt))
 }
 
 overall <- function(rtdat,add=T) 
