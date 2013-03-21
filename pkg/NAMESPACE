@@ -27,6 +27,7 @@ export(
 	within.condition,
 	sat,
 	plot.sat,
+	fitexgauss,
 	wpr,
 	export.rt,
 	fitDiffusionModel,

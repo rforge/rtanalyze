@@ -383,4 +383,60 @@ function(rtdata,quants=c(.1,.3,.5,.7,.9),ylim=c(.5,1))
 	
 }
 
+fitexgauss <- function(rtdat,which.condition) 
+#using
+{
+	if(missing(which.condition)) which.condition=NULL
+	
+	if(is.null(which.condition)) {
+		rtdat = overall(rtdat,TRUE)
+		which.condition = names(.rtdata.conditions(rtdat))[dim(.rtdata.conditions(rtdat))[2]]
+		remov = TRUE
+	} else remov = FALSE
+	
+	if(is.numeric(which.condition)) {
+		dat = data.frame(.rtdata.conditions(rtdat)[,which.condition]) 
+		names(dat) = which.condition
+		totlev = makelevels(names(.rtdata.conditions(rtdat)==which.condition),dat)
+		totmat = makeconditionarray(names(.rtdata.conditions(rtdat)==which.condition),totlev)
+		
+	} else {
+		dat = data.frame(.rtdata.conditions(rtdat)[,match(which.condition,names(.rtdata.conditions(rtdat)))])
+		names(dat) = which.condition
+		totlev = makelevels(which.condition,dat)
+		totmat = makeconditionarray(which.condition,totlev)
+	}	
+	
+	condnames = colnames(totmat)
+	
+	outdata = data.frame(mu=rep(NA,dim(totmat)[1]),sigma=rep(NA,dim(totmat)[1]),tau=rep(NA,dim(totmat)[1]))
+	rownames(outdata) = rownames(totmat)
+	
+	for(cond in 1:dim(totmat)[1])	{
+		
+		#make selve empty
+		selvec = numeric(0)
+		
+		evstring = paste('selvec = which(rtdat@conditions$`',condnames[1],'`==\'',totmat[cond,1],'\'',sep='')
+		if(length(condnames)>1) {
+			for(i in 2:length(condnames)) {
+				evstring = paste(evstring,' & rtdat@conditions$`',condnames[i],'`==\'',totmat[cond,i],'\'',sep='') 
+			}
+		}
+		
+		evstring = paste(evstring,')',sep='')
+		eval(parse(text=evstring))
+		#selvec is now an object of the selected trials	
+	
+		rtvec = rtdat@rt[selvec][rtdat@valid[selvec]==TRUE & rtdat@correct[selvec]==TRUE]
+		
+		out = fitexg(rtvec)
+		
+		if(out$convergence==0) outdata[cond,] = out$par
+		
+	}
+	
+	return(outdata)
+	
+}
 
