@@ -71,7 +71,7 @@ export.rt <- function(subjectdata,which=NULL,ID.ind=NULL)
 	
 }
 
-wpr <- function(subjectdata,iq.indicator,which.within=numeric(0),quantiles=c(.1,.3,.5,.7,.9),ID.ind=NULL) 
+wpr <- function(subjectdata,iq.indicator,which.within=numeric(0),quantiles=c(.1,.3,.5,.7,.9),ID.ind=NULL,templatesub=1) 
 #calculate worst performance rule (rt*iq correlations per quantile)
 {
 	
@@ -98,11 +98,6 @@ wpr <- function(subjectdata,iq.indicator,which.within=numeric(0),quantiles=c(.1,
 		qframe = rbind(qframe,qd)
 	}
 	
-	levs = levels(qframe$stimulus)
-	
-	outframe = pframe = matrix(NA,length(levs),length(quantiles),dimnames=list(levs,quantiles))
-	
-	
 	#get IQ vector
 	if(is.numeric(iq.indicator)) {
 		iqvec = .subjects.variables(subjectdata)[,iq.indicator]
@@ -110,19 +105,41 @@ wpr <- function(subjectdata,iq.indicator,which.within=numeric(0),quantiles=c(.1,
 		iqvec = .subjects.variables(subjectdata)[,which(names(.subjects.variables(subjectdata))==as.character(iq.indicator))]
 	}
 	
-	#perform IQ*quantile analysis per level of the within variable (for each quantile)
-	for(i in 1:length(levs)) 
-	{
+	#select only valids
+	iqvec = iqvec[subs]
+	
+	#make conditions etc.
+	totlev = makelevels(which.within,subjectdata@rtdata[[templatesub]])
+	totmat = makeconditionarray(which.within,totlev)
+	
+	condnames = colnames(totmat)
+	dmcondnames = rownames(totmat)
+	
+	outframe = pframe = as.data.frame(matrix(NA,length(dmcondnames),length(quantiles),dimnames=list(dmcondnames,quantiles)))
+
+	for(dmcond in 1:dim(totmat)[1])	{
+		evstring = paste('dat = qframe[qframe$`',condnames[1],'`==\'',totmat[dmcond,1],'\'',sep='')
+		
+		if(length(condnames)>1) {
+			for(i in 2:length(condnames)) {
+				evstring = paste(evstring,' & qframe$`',condnames[i],'`==\'',totmat[dmcond,i],'\'',sep='') 
+			}
+		}
+		
+		evstring = paste(evstring,',]',sep='')
+		eval(parse(text=evstring))
+		
 		for(j in 1:length(quantiles)) {
 			
 			col = ncol(qframe)-length(quantiles)+j
-			qvec = qframe[qframe$stimulus==levs[i],col]
+			qvec = dat[,col]
+
 			corest = cor.test(iqvec,qvec)
-			
-			outframe[i,j] = corest$estimate
-			pframe[i,j] = corest$p.value
+			outframe[dmcond,j] = corest$estimate
+			pframe[dmcond,j] = corest$p.value
 			
 		}
+		
 	}
 	
 	## TODO
