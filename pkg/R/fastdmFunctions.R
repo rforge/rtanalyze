@@ -60,7 +60,7 @@ fitDiffusionModel <- function(rtdat,fdmobject,ID,onlyreadoutput=F,removeAfterUse
 }
 
 
-doexp <- function(fdmex,subject.indicator=NULL,bootstrapnum=1,runfdm=T,removeAfterUse=T) 
+doexp <- function(fdmex,subject.indicator=NULL,bootstrapnum=1,runfdm=T,removeAfterUse=T,usingWin=F,runstring='c:/fast-dm-29-win32/fast-dm-29.exe') 
 {
 	cat('[fast-dm] Fitting subject',subject.indicator,'...\n')
 		
@@ -103,10 +103,17 @@ doexp <- function(fdmex,subject.indicator=NULL,bootstrapnum=1,runfdm=T,removeAft
 	}
 
 	#run the actual fast-dm analysis
+	
+		
 	if(runfdm) {
 		fn = paste(fdmex@datadir,'/experiment.ctl',sep='')
 		write.table(writestring,file=fn,row.names=F,col.names=F,quote=F)
-		output = system(paste('cd ',fdmex@datadir,'\n',fdmex@appdir,'/fast-dm ',fn,sep=''),intern=TRUE)
+		
+		if(usingWin==TRUE) {
+			system(runstring)
+		} else {
+			output = system(paste('cd ',fdmex@datadir,'\n',fdmex@appdir,'/fast-dm ',fn,sep=''),intern=FALSE)	
+		}
 		
 		if(removeAfterUse) {
 			file.remove(fn)
@@ -132,7 +139,7 @@ doexp <- function(fdmex,subject.indicator=NULL,bootstrapnum=1,runfdm=T,removeAft
 	#get all estimates in the right order and estimate forward data	
 	dependent = getdepends(fdmex,dat,out)		
 	estimates = getestimates(fdmex,out,dependent$outmat,dependent$levelmat)		
-	sampledata = getsamples(fdmex,dat,estimates,bootstrapnum,T,subject.indicator,runfdm)
+	if(bootstrapnum!=0) sampledata = getsamples(fdmex,dat,estimates,bootstrapnum,T,subject.indicator,runfdm) else sampledata=numeric(0)
 	
 	fdmout = new('fdmoutput')
 	fdmout@ID = subject.indicator

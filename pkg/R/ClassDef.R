@@ -24,8 +24,8 @@ setClass(
 	prototype=prototype(
 		version=1,
 		build=2,
-		update=7,
-		svnrev=35
+		update=8,
+		svnrev=36
 	)#,
 	#package='RTanalyze'
 )
