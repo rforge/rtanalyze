@@ -14,7 +14,7 @@
 #getestimates
 #getsamples
 
-fitDiffusionModel <- function(rtdat,fdmobject,ID,onlyreadoutput=F,removeAfterUse=T) 
+fitDiffusionModel <- function(rtdat,fdmobject,ID,onlyreadoutput=F,removeAfterUse=T,usingWin=F,runstring='c:/fast-dm-29-win32/') 
 #fit diffusion model on a set of subjects
 {
 	if(missing(ID)) {
@@ -53,14 +53,14 @@ fitDiffusionModel <- function(rtdat,fdmobject,ID,onlyreadoutput=F,removeAfterUse
 	
 	#do actual experiment
 	if(onlyreadoutput==F) runfdm = T else runfdm = F
-	fdmdata = doexp(fdmobject,subject,bootstrapnum=.fastdm.bootstrap.num(fdmobject),runfdm=runfdm,removeAfterUse=removeAfterUse)
+	fdmdata = doexp(fdmobject,subject,bootstrapnum=.fastdm.bootstrap.num(fdmobject),runfdm=runfdm,removeAfterUse=removeAfterUse,usingWin=usingWin,runstring=runstring)
 	
 	
 	return(fdmdata)
 }
 
 
-doexp <- function(fdmex,subject.indicator=NULL,bootstrapnum=1,runfdm=T,removeAfterUse=T,usingWin=F,runstring='c:/fast-dm-29-win32/fast-dm-29.exe') 
+doexp <- function(fdmex,subject.indicator=NULL,bootstrapnum=1,runfdm=T,removeAfterUse=T,usingWin=F,runstring='c:/fast-dm-29-win32/') 
 {
 	cat('[fast-dm] Fitting subject',subject.indicator,'...\n')
 		
@@ -110,7 +110,10 @@ doexp <- function(fdmex,subject.indicator=NULL,bootstrapnum=1,runfdm=T,removeAft
 		write.table(writestring,file=fn,row.names=F,col.names=F,quote=F)
 		
 		if(usingWin==TRUE) {
-			system(runstring)
+			owd=getwd()
+			setwd(runstring)
+			output = system(paste(runstring,'fast-dm-29.exe',sep=''))
+			setwd(owd)
 		} else {
 			output = system(paste('cd ',fdmex@datadir,'\n',fdmex@appdir,'/fast-dm ',fn,sep=''),intern=FALSE)	
 		}
