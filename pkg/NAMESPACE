@@ -39,7 +39,9 @@ export(
 	getsamples,
 	makefitarray,
 	summarize.diffmod,
-	simulatesamples
+	simulatesamples,
+	dmgui,
+	dmgui_example
 )
 
 exportPattern("^[\\.]")

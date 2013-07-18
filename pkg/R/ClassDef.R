@@ -24,8 +24,8 @@ setClass(
 	prototype=prototype(
 		version=1,
 		build=2,
-		update=8,
-		svnrev=37
+		update=9,
+		svnrev=38
 	)#,
 	#package='RTanalyze'
 )
@@ -179,9 +179,9 @@ setClass(
 				appdir = 'character'
 		),
 		prototype(
-				conditions = c('switch'),
-				format = c('TIME','RESPONSE','switch'),
-				depends = list(c('v','switch'),c('a','switch'),c('t0','switch')),
+				conditions = c('condition'),
+				format = c('TIME','RESPONSE','condition'),
+				depends = list(c('v','condition'),c('a','condition'),c('t0','condition')),
 				set = list(c('z',.5)),
 				dataname = 'ppn*.txt',
 				outputname = 'results_ppn*.txt',
