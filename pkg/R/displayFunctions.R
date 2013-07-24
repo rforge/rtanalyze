@@ -16,75 +16,89 @@ dmgui <- function(sdat)
 	library(tcltk)
 	tt <- tktoplevel()
 	tktitle(tt) <- paste('rtanalyze Diffusion Model Analysis (using fast-DM)',sep='')
-	tkgrid(tklabel(tt,text=paste('Loaded experiment:',.subjects.experimentname(sdat),'\n')),columnspan=8)
+	#tkgrid(tklabel(tt,text=paste('Loaded experiment:',.subjects.experimentname(sdat),'\n')),sticky='nw',columnspan=7)
 	
 	#make scroll-bar
 	scr <- tkscrollbar(tt, repeatinterval=5,command=function(...)tkyview(tl,...))
 	tl<-tklistbox(tt,height=12,selectmode="single",yscrollcommand=function(...)tkset(scr,...),background="white")
 		
-	tkgrid(tklabel(tt,text="Available conditions"))
-	tkgrid(tl,scr)
-	tkgrid.configure(scr,rowspan=8,sticky="nsw")
+	tkgrid(tklabel(tt,text="Available conditions"),row=3,columnspan=7)
+	tkgrid(tl,columnspan=7,row=4)
+	tkgrid(tklabel(tt,text="Depends over conditions:"),row=5,columnspan=7)
+	
+	
+	dcb = vector('list',7)
+	dmc = vector('list',7)
+	names(dmc) = cn = c('v','a','t0','z','sz','st0','sv')
+	
+	#add checkboxes
+	for(i in 1:7) 
+	{
+		dcb[[i]] <- tkcheckbutton(tt)
+		dmc[[i]] <- tclVar("0")
+		tkconfigure(dcb[[i]],variable=dmc[[i]])
+		tkgrid(tklabel(tt,text=cn[i]),column=i-1,row=6,sticky='n')
+		tkgrid(dcb[[i]],column=i-1,row=7,sticky='n')
+	}
 	
 	#fill with names of conditions
 	fv = which(.subjects.valid(sdat)==TRUE)
 	cnames = names(.rtdata.conditions(.subjects.rtdata(sdat)[[fv[1]]]))
 	for (i in 1:length(cnames)) tkinsert(tl,"end",cnames[i])
 	tkselection.set(tl,0)
-	
-	dcb = vector('list',7)
-	dmc = vector('list',7)
-	cn = names(dmc) = c('v','a','t0','z','sz','st0','sv')
-	
-	tkgrid(tklabel(tt,text="Depends over conditions"))
-	tkgrid(tl,scr)
-	tkgrid.configure(scr,rowspan=8,sticky="nsw")
-	
-	#add checkboxes
-	for(i in 1:7) 
-	{
-		
-		dcb[[i]] <- tkcheckbutton(tt)
-		dmc[[i]] = tclVar("0")
-		
-		tkconfigure(dcb[[i]],variable=dmc[[i]])
-		tkgrid(tklabel(tt,text=cn[i]),dcb[[i]])
-		
-	}
-	
-	#use the tclvar character conversion (make matrix with 0 and zeroes), make list of vars, set tclvar for each list item (parameter), update cb values.
-	
+			
 	#Make list for every condition name
 	depmat = vector('list',length(cnames))
 	for(i in 1:length(depmat)) {
-		depmat[[i]] = dmc
+		depmat[[i]] = rep(as.character(0),7)
 	}
 	
-	#add display button
+	#add when selection changes
 	dispCB <- function() 
 	{
 		ci <- as.integer(tkcurselection(tl))+1
-		
+
 		for(i in 1:7) {
-			dmc[[i]]=depmat[[ci]][[i]]
+			dmc[[i]] <<- tclVar(depmat[[ci]][i])
 			tkconfigure(dcb[[i]],variable=dmc[[i]])
 		}
-		#browser()
+
 	}
 	
-	tkbind(tl,"<Button-1>",dispCB)
+	#use button release as moment to capture which selection is 
+	#tkbind(tl,"<Button-1>",dispCB)
+	tkbind(tl,"<ButtonRelease-1>",dispCB)
 	
 	#add assign button
 	pressAssign <- function() 
 	{
 		ci <- as.integer(tkcurselection(tl))+1
-		for(i in 1:7) depmat[[ci]][[i]] = dmc[[i]]
-				
+
+		for(i in 1:7) depmat[[ci]][i] <<- as.character(tclvalue(dmc[[i]]))
+
 	}
+	
+	pressSave <- function() {
+		
+		tkmessageBox(message='Saving preferences.')	
+		assign('x',depmat,pos=.GlobalEnv)
+		tkdestroy(tt)
+	}
+	
 	assign.but <- tkbutton(tt, text = "Assign", command = pressAssign)
-	tkgrid(assign.but)		# Place the button on the window
+	save.but <- tkbutton(tt,text='Save',command=pressSave)
+	tkgrid(assign.but,save.but,column=0,columnspan=3,row=8)		# Place the button on the window
+	tkgrid(save.but,column=4,columnspan=3,row=8)				# Place the button on the window
 	
-	
+	odm = function() cat('Open\n')
+	sdm = function() cat('Save\n')
+		
+	tm = tkmenu(tt)
+	tkconfigure(tt,menu=tm)
+	fm = tkmenu(tm,tearoff=FALSE)
+	tkadd(fm,'command',label='Open fast-DM setup file',command=odm)
+	tkadd(fm,'command',label='Save fast-DM setup file',command=sdm)
+	tkadd(tm,'cascade',label='File',menu=fm)
 	
 	tkfocus(tt)
 	
