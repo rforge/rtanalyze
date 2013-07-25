@@ -438,3 +438,59 @@ summarize.diffmod <- function(subjectdata)
 	return(summary.dif)
 	
 }
+
+readFDM <- function(wd=getwd(),expname='experiment.ctl',outname='fdmestimates.txt') 
+{
+	twd = getwd()
+	setwd(wd)
+	
+	dat = read.table(expname,header=F,sep='',fill=T,stringsAsFactors=F)
+	
+	cat('Reading',expname,'from',wd,'\n')
+	
+	np = dat[grep('save',tolower(dat[,1])),2]
+	np2 = strsplit(np,'\\*')[[1]][1]
+	
+	fl = list.files(wd,np2)
+	
+	if(length(fl)>0) {
+		cat('Found',length(fl),'output files. Fetching estimates...')
+		
+		tmp = read.table(fl[1],sep='',header=F,stringsAsFactors=F)
+		out = matrix(NA,length(fl),nrow(tmp),dimnames=list(fl,tmp[order(tmp[,1]),1]))
+		
+		if(sum(colnames(out)==tmp[order(tmp[,1]),1])==length(colnames(out)))	out[1,] = tmp[order(tmp[,1]),3] else stop('Parameter names mismatch\n')
+		
+		if(length(fl)>1) {		
+			for(i in 2:length(fl)) {
+				tmp = read.table(fl[i],sep='',header=F,stringsAsFactors=F)
+				if(sum(colnames(out)==tmp[order(tmp[,1]),1])==length(colnames(out))) out[i,] = tmp[order(tmp[,1]),3] else stop('Parameter names mismatch\n')
+			}
+		}
+		cat('done.\n')
+		
+	} else {
+		stop(paste('There are no filenames matching `',np2,'`in directory ',wd,'. Please check ',expname,'.',sep=''))
+	}
+	
+	#write it down
+	out = as.data.frame(out)
+	out = cbind(rownames(out),out)
+	names(out)[1]='filename'
+
+	checkname <- function(outname) {
+		x = strsplit(outname,'\\.')
+		outname = paste(x[[1]][1],'0.',x[[1]][2],sep='')
+		return(outname)
+	}
+	
+	while(file.exists(outname)) {
+		outname = checkname(outname)
+	}
+	
+	write.table(out,file=outname,row.names=F,col.names=T,sep='\t',na='')
+	cat('Written output to',outname,'\n')
+		
+	setwd(twd)
+	return(invisible(out))
+}

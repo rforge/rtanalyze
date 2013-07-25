@@ -41,7 +41,8 @@ export(
 	summarize.diffmod,
 	simulatesamples,
 	dmgui,
-	dmgui_example
+	dmgui_example,
+	readFDM
 )
 
 exportPattern("^[\\.]")
