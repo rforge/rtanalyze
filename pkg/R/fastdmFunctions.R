@@ -494,3 +494,25 @@ readFDM <- function(wd=getwd(),expname='experiment.ctl',outname='fdmestimates.tx
 	setwd(twd)
 	return(invisible(out))
 }
+
+
+
+link.fdmdata <- function(subjectdata,fdmdata,subjIDname='ppID') 
+#link a list of fdmdata objects to matching subjects data
+{
+	sv = which(.subjects.valid(subjectdata)==TRUE)
+	.subjects.fdmdata(subjectdata) = vector('list',length(.subjects.valid(subjectdata)))
+	
+	for(i in 1:length(fdmdata)) {
+		
+		#check match and fill if all is well
+		if(.subjects.variables(subjectdata)[,grep(paste('^',subjIDname,'$',sep=''),names(.subjects.variables(subjectdata)))][sv[i]]==.fdmoutput.ID(fdmdata[[i]])) {
+			.subjects.fdmdata(subjectdata)[[sv[i]]] = fdmdata[[i]] 
+		} else {
+			cat(.subjects.variables(subjectdata)[,grep(paste('^',subjIDname,'$',sep=''),names(.subjects.variables(subjectdata)))][sv[i]],.fdmoutput.ID(fdmdata[[i]]),'\n')
+			warning('No ppID match') 
+		}
+	}	
+	
+	return(subjectdata)
+}

@@ -39,6 +39,7 @@ export(
 	getsamples,
 	makefitarray,
 	summarize.diffmod,
+	link.fdmdata,
 	simulatesamples,
 	dmgui,
 	dmgui_example,
