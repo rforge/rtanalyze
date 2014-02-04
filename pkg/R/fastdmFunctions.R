@@ -67,6 +67,9 @@ doexp <- function(fdmex,subject.indicator=NULL,bootstrapnum=1,runfdm=T,removeAft
 	#make experiment file based on fastdm object
 	writestring = character(0)
 	
+	#set method to KS as default (TODO make an option for method selection).
+	writestring = c(writestring,'method ks\n')
+	
 	if(length(fdmex@set)!=0) {
 		for(i in 1:length(fdmex@set)) {
 			writestring = c(writestring,paste('set ',fdmex@set[[i]][1],' ',fdmex@set[[i]][2],'\n',sep=''))

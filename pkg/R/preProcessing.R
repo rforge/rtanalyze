@@ -189,7 +189,7 @@ function(rtdat,which.condition=NULL,method.min=c('abs','sd','ewma'),method.max=c
 	if(method.min=='abs') {
 		if(length(rtmin)==1) {
 			rtminvec = rep(rtmin,dim(totmat)[1])
-			warning('Recycling rtmin values for all levels.')
+			#warning('Recycling rtmin values for all levels.')
 		} else {
 			if(length(rtmin)!=dim(totmat)[1]) {
 				stop('Length of rtmin not equal to number of levels!')
@@ -202,7 +202,7 @@ function(rtdat,which.condition=NULL,method.min=c('abs','sd','ewma'),method.max=c
 	if(method.max=='abs') {
 		if(length(rtmax)==1) {
 			rtmaxvec = rep(rtmax,dim(totmat)[1])
-			warning('Recycling rtmax values for all levels.')
+			#warning('Recycling rtmax values for all levels.')
 		} else {
 			if(length(rtmax)!=dim(totmat)[1]) {
 				stop('Length of rtmax not equal to number of levels!')
