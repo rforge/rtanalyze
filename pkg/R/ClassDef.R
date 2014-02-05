@@ -24,8 +24,8 @@ setClass(
 	prototype=prototype(
 		version=1,
 		build=2,
-		update=13,
-		svnrev=42
+		update=14,
+		svnrev=43
 	)#,
 	#package='RTanalyze'
 )
@@ -176,20 +176,22 @@ setClass(
 				bootstrap.type='character',
 				bootstrap.num = 'numeric',
 				subjectlist='character',
-				appdir = 'character'
+				appdir = 'character',
+				method = 'character'
 		),
 		prototype(
 				conditions = c('condition'),
 				format = c('TIME','RESPONSE','condition'),
 				depends = list(c('v','condition'),c('a','condition'),c('t0','condition')),
-				set = list(c('z',.5)),
+				set = list(c('zr',0.5)),
 				dataname = 'ppn*.txt',
 				outputname = 'results_ppn*.txt',
-				appdir = '/Applications/fast-dm-29/',
+				appdir = '/usr/local/bin/',
 				bootstrap.type = 'det',
 				bootstrap.num = 1,
 				subjectlist= '',
-				datadir = ''
+				datadir = '',
+				method = 'KS'
 		)
 )
 

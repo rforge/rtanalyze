@@ -50,7 +50,6 @@ fitDiffusionModel <- function(rtdat,fdmobject,ID,onlyreadoutput=F,removeAfterUse
 	fnt = strsplit(.fastdm.dataname(fdmobject),'\\*')[[1]]
 	fn = paste(fnt[1],subject,fnt[2],sep='')
 	write.table(rtvec,file=paste(path,'/',fn,sep=''),quote=F,row.names=F,col.names=F,sep='\t')
-	
 	#do actual experiment
 	if(onlyreadoutput==F) runfdm = T else runfdm = F
 	fdmdata = doexp(fdmobject,subject,bootstrapnum=.fastdm.bootstrap.num(fdmobject),runfdm=runfdm,removeAfterUse=removeAfterUse,usingWin=usingWin,runstring=runstring)
@@ -118,7 +117,7 @@ doexp <- function(fdmex,subject.indicator=NULL,bootstrapnum=1,runfdm=T,removeAft
 			output = system(paste(runstring,'fast-dm-29.exe',sep=''))
 			setwd(owd)
 		} else {
-			output = system(paste('cd ',fdmex@datadir,'\n',fdmex@appdir,'/fast-dm ',fn,sep=''),intern=FALSE)	
+			output = try(system(paste('cd ',fdmex@datadir,'\n',fdmex@appdir,'/fast-dm ',fn,sep=''),intern=FALSE))	
 		}
 		
 		if(removeAfterUse) {
@@ -126,39 +125,66 @@ doexp <- function(fdmex,subject.indicator=NULL,bootstrapnum=1,runfdm=T,removeAft
 		}
 	}
 	
-	#format the outputparameters
-	dfn = paste(fdmex@datadir,'/',datname,sep='')
-	dat = read.table(dfn,header=F)
-	names(dat) = fdmex@format
-	ofn = paste(fdmex@datadir,'/',outname,sep='')
-	out = read.table(ofn,header=F)
-	out = out[,-2]
-	outframe = data.frame(t(out[,2]))
-	names(outframe) = out[,1]
-
-	if(removeAfterUse) {
-		file.remove(dfn)
-		file.remove(ofn)
+	if(class(output)!='try-error' & file.exists(paste(fdmex@datadir,'/',outname,sep=''))) {
+	
+		#format the outputparameters
+		dfn = paste(fdmex@datadir,'/',datname,sep='')
+		dat = read.table(dfn,header=F,fill=T)
+		
+		names(dat) = fdmex@format
+		ofn = paste(fdmex@datadir,'/',outname,sep='')
+		out = read.table(ofn,header=F,fill=T,stringsAsFactors=F)
+		
+		#fix fit index readin
+		rmon = which(out$V2=='index')
+		if(length(rmon)>0) {
+			out$V1[rmon]='fit_index'
+			out$V2[rmon]='='
+			out$V3[rmon]=out$V1[rmon+1]
+			out=out[-(rmon+1),]
+		}
+		
+		#set method to numeric
+		m = out$V3[out$V1=='method']
+		if(m=='ML') out$V3[out$V1=='method']=1
+		if(m=='KS') out$V3[out$V1=='method']=2
+		if(m=='CS') out$V3[out$V1=='method']=3
+		out$V3 = as.numeric(out$V3)
+		
+		out = out[,-2]
+		outframe = data.frame(t(out[,2]))
+		names(outframe) = out[,1]
+		
+		if(removeAfterUse) {
+			file.remove(dfn)
+			file.remove(ofn)
+		}
+		
+		
+		#get all estimates in the right order and estimate forward data	
+		dependent = getdepends(fdmex,dat,out)		
+		estimates = getestimates(fdmex,out,dependent$outmat,dependent$levelmat)		
+		if(bootstrapnum!=0) sampledata = getsamples(fdmex,dat,estimates,bootstrapnum,T,subject.indicator,runfdm) else sampledata=numeric(0)
+		
+		fdmout = new('fdmoutput')
+		fdmout@ID = subject.indicator
+		fdmout@fdmex = fdmex
+		fdmout@data = dat
+		fdmout@parameters = t(outframe)
+		fdmout@estimates = estimates
+		fdmout@bootstrapdata = sampledata
+		fdmout@outputlog = output
+		
+		cat('[fast-dm] Finished\n')
+	
+		return(fdmout)
+		
+	} else {
+		cat('[fast-dm] Finished with ERRORS.\n')
+		
+		return(NULL)
 	}
 	
-	
-	#get all estimates in the right order and estimate forward data	
-	dependent = getdepends(fdmex,dat,out)		
-	estimates = getestimates(fdmex,out,dependent$outmat,dependent$levelmat)		
-	if(bootstrapnum!=0) sampledata = getsamples(fdmex,dat,estimates,bootstrapnum,T,subject.indicator,runfdm) else sampledata=numeric(0)
-	
-	fdmout = new('fdmoutput')
-	fdmout@ID = subject.indicator
-	fdmout@fdmex = fdmex
-	fdmout@data = dat
-	fdmout@parameters = t(outframe)
-	fdmout@estimates = estimates
-	fdmout@bootstrapdata = sampledata
-	fdmout@outputlog = output
-	
-	cat('[fast-dm] Finished\n')
-	
-	return(fdmout)
 	
 }
 
@@ -208,7 +234,7 @@ makeconditionarray <- function(conditionvec,lv)
 	return(condmat)
 }
 
-getdepends <- function(fdmex,dat,out,parameters=c('v','a','t0','z','sz','st0','sv')) 
+getdepends <- function(fdmex,dat,out,parameters=c('v','a','t0','zr','szr','st0','sv')) 
 {
 	totlev = makelevels(fdmex@conditions,dat)
 	totmat = makeconditionarray(fdmex@conditions,totlev)
@@ -297,7 +323,7 @@ getsamples <- function(fdmex,dat,estimatematrix,bootstraps=1,deterministic=F,sub
 		
 		if(!deterministic) {
 			if(runfdm) {
-				outlog = system(paste('cd ',fdmex@datadir,'\n',fdmex@appdir,'/construct-samples ','-a',estimatematrix[cond,which(paramvec=='a')],' -z',estimatematrix[cond,which(paramvec=='z')],' -v',estimatematrix[cond,which(paramvec=='v')],' -t',estimatematrix[cond,which(paramvec=='t0')],' -Z',estimatematrix[cond,which(paramvec=='sz')],' -V',estimatematrix[cond,which(paramvec=='sv')],' -T',estimatematrix[cond,which(paramvec=='st0')],' -n',samplen,' -r',' -N',bootstraps,' -o',path.expand(fdmex@datadir),'/',subID,'_cond',cond,sampledatname,'%d',sampledatext,sep=''),intern=FALSE)
+				outlog = system(paste('cd ',fdmex@datadir,'\n',fdmex@appdir,'/construct-samples ','-a',estimatematrix[cond,which(paramvec=='a')],' -z',estimatematrix[cond,which(paramvec=='zr')],' -v',estimatematrix[cond,which(paramvec=='v')],' -t',estimatematrix[cond,which(paramvec=='t0')],' -Z',estimatematrix[cond,which(paramvec=='szr')],' -V',estimatematrix[cond,which(paramvec=='sv')],' -T',estimatematrix[cond,which(paramvec=='st0')],' -n',samplen,' -r',' -N',bootstraps,' -o',path.expand(fdmex@datadir),'/',subID,'_cond',cond,sampledatname,'%d',sampledatext,sep=''),intern=FALSE)
 			}
 			
 			for(bs in 1:bootstraps) {
@@ -312,7 +338,7 @@ getsamples <- function(fdmex,dat,estimatematrix,bootstraps=1,deterministic=F,sub
 		} else {
 			bs = 1
 			if(runfdm) {
-				outlog = system(paste('cd ',fdmex@datadir,'\n',fdmex@appdir,'/construct-samples ','-a',estimatematrix[cond,which(paramvec=='a')],' -z',estimatematrix[cond,which(paramvec=='z')],' -v',estimatematrix[cond,which(paramvec=='v')],' -t',estimatematrix[cond,which(paramvec=='t0')],' -Z',estimatematrix[cond,which(paramvec=='sz')],' -V',estimatematrix[cond,which(paramvec=='sv')],' -T',estimatematrix[cond,which(paramvec=='st0')],' -n',samplen,' -N',bootstraps,' -o',path.expand(fdmex@datadir),'/',subID,'_cond',cond,sampledatname,'%d',sampledatext,sep=''),intern=FALSE)
+				outlog = system(paste('cd ',fdmex@datadir,'\n',fdmex@appdir,'/construct-samples ','-a',estimatematrix[cond,which(paramvec=='a')],' -z',estimatematrix[cond,which(paramvec=='zr')],' -v',estimatematrix[cond,which(paramvec=='v')],' -t',estimatematrix[cond,which(paramvec=='t0')],' -Z',estimatematrix[cond,which(paramvec=='szr')],' -V',estimatematrix[cond,which(paramvec=='sv')],' -T',estimatematrix[cond,which(paramvec=='st0')],' -n',samplen,' -N',bootstraps,' -o',path.expand(fdmex@datadir),'/',subID,'_cond',cond,sampledatname,'%d',sampledatext,sep=''),intern=FALSE)
 			}
 			
 			fn = paste(fdmex@datadir,'/',subID,'_cond',cond,sampledatname,bs-1,sampledatext,sep='')
@@ -446,7 +472,7 @@ readFDM <- function(wd=getwd(),expname='experiment.ctl',outname='fdmestimates.tx
 {
 	twd = getwd()
 	setwd(wd)
-	
+
 	dat = read.table(expname,header=F,sep='',fill=T,stringsAsFactors=F)
 	
 	cat('Reading',expname,'from',wd,'\n')
@@ -459,7 +485,7 @@ readFDM <- function(wd=getwd(),expname='experiment.ctl',outname='fdmestimates.tx
 	if(length(fl)>0) {
 		cat('Found',length(fl),'output files. Fetching estimates...')
 		
-		tmp = read.table(fl[1],sep='',header=F,stringsAsFactors=F)
+		tmp = read.table(fl[1],sep='',header=F,stringsAsFactors=F,fill=T)
 		out = matrix(NA,length(fl),nrow(tmp),dimnames=list(fl,tmp[order(tmp[,1]),1]))
 		
 		if(sum(colnames(out)==tmp[order(tmp[,1]),1])==length(colnames(out)))	out[1,] = tmp[order(tmp[,1]),3] else stop('Parameter names mismatch\n')

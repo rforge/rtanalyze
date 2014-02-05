@@ -746,6 +746,17 @@ standGen <- function(x, value) standardGeneric('.fastdm.appdir<-')
 standMethod <- function(x, value) {x@appdir<- value;x}
 setGeneric(slotreplace,standGen)
 setReplaceMethod(funcname,classname,standMethod)
+classname <-'fastdm'
+funcname <-'.fastdm.method'
+standGen <- function(object) standardGeneric('.fastdm.method')
+standMethod <- function(object) object@method
+setGeneric(funcname,standGen,package='rtanalyze')
+setMethod(funcname,classname,standMethod)
+slotreplace <-'.fastdm.method<-'
+standGen <- function(x, value) standardGeneric('.fastdm.method<-')
+standMethod <- function(x, value) {x@method<- value;x}
+setGeneric(slotreplace,standGen)
+setReplaceMethod(funcname,classname,standMethod)
 classname <-'fdmoutput'
 funcname <-'.fdmoutput.ID'
 standGen <- function(object) standardGeneric('.fdmoutput.ID')

@@ -67,6 +67,7 @@ exportMethods(
 .fastdm.bootstrap.num,
 .fastdm.subjectlist,
 .fastdm.appdir,
+.fastdm.method,
 .fdmoutput.ID,
 .fdmoutput.fdmex,
 .fdmoutput.data,
