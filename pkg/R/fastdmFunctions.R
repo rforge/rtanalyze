@@ -67,7 +67,8 @@ doexp <- function(fdmex,subject.indicator=NULL,bootstrapnum=1,runfdm=T,removeAft
 	writestring = character(0)
 	
 	#set method to KS as default (TODO make an option for method selection).
-	writestring = c(writestring,'method ks\n')
+	meth = tolower(fdmex@method)
+	writestring = c(writestring,paste('method ',meth,'\n',sep=''))
 	
 	if(length(fdmex@set)!=0) {
 		for(i in 1:length(fdmex@set)) {
