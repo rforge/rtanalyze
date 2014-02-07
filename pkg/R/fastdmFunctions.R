@@ -329,8 +329,15 @@ getsamples <- function(fdmex,dat,estimatematrix,bootstraps=1,deterministic=F,sub
 			
 			for(bs in 1:bootstraps) {
 				fn=paste(fdmex@datadir,'/',subID,'_cond',cond,sampledatname,bs-1,sampledatext,sep='')
-				bssample[,,bs] = as.matrix(read.table(file=fn))
-				if(removeAfterUse) file.remove(fn)
+				
+				rbs = try(read.table(file=fn))
+				if(class(rbs)!='try-error') {
+					bssample[,,bs] = as.matrix(rbs)
+					if(removeAfterUse) file.remove(fn)
+				} else {
+					cat('[fast-dm] BOOTSTRAP ERROR\n')
+				}
+				
 			}
 			
 			sampledat[[cond]] = bssample
@@ -343,8 +350,14 @@ getsamples <- function(fdmex,dat,estimatematrix,bootstraps=1,deterministic=F,sub
 			}
 			
 			fn = paste(fdmex@datadir,'/',subID,'_cond',cond,sampledatname,bs-1,sampledatext,sep='')
-			sampledat[[cond]] = as.matrix(read.table(file=fn))
-			if(removeAfterUse) file.remove(fn)
+			rbs = try(read.table(file=fn))
+			if(class(rbs)!='try-error') {
+				sampledat[[cond]] = as.matrix(rbs)
+				if(removeAfterUse) file.remove(fn)	
+			} else {
+				cat('[fast-dm] BOOTSTRAP ERROR\n')
+			}
+			
 		}
 		
 		
