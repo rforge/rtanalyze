@@ -376,22 +376,27 @@ getsamples <- function(fdmex,dat,estimatematrix,bootstraps=1,deterministic=F,sub
 }
 
 simulatesamples <- 
-function(fdmex,subject.indicator=NULL,fixedlist=NULL,bootstrapnum=1) 
+function(fdmdata,fixedlist=NULL,bootstrapnum=1) 
 {
+	##CHANGE TO WORK WITH FDMDATA
 	
 	#set datname
-	sp = strsplit(fdmex@dataname,'\\*')
-	datname = paste(sp[[1]][1],subject.indicator,sp[[1]][2],sep='')
-	sp = strsplit(fdmex@outputname,'\\*')
-	outname = paste(sp[[1]][1],subject.indicator,sp[[1]][2],sep='')
+	#sp = strsplit(fdmex@dataname,'\\*')
+	#datname = paste(sp[[1]][1],subject.indicator,sp[[1]][2],sep='')
+	#sp = strsplit(fdmex@outputname,'\\*')
+	#outname = paste(sp[[1]][1],subject.indicator,sp[[1]][2],sep='')
 	
 	#format the outputparameters
-	dat = read.table(paste(fdmex@datadir,'/',datname,sep=''),header=F)
-	names(dat) = fdmex@format
-	out = read.table(paste(fdmex@datadir,'/',outname,sep=''),header=F)
-	out = out[,-2]
-	outframe = data.frame(t(out[,2]))
-	names(outframe) = out[,1]
+	#dat = read.table(paste(fdmex@datadir,'/',datname,sep=''),header=F)
+	#names(dat) = fdmex@format
+	#out = read.table(paste(fdmex@datadir,'/',outname,sep=''),header=F)
+	#out = out[,-2]
+	#outframe = data.frame(t(out[,2]))
+	#names(outframe) = out[,1]
+	browser()
+	
+	
+	
 	
 	#get all estimates in the right order and estimate forward data	
 	dependent = getdepends(fdmex,dat,out)		
@@ -407,7 +412,7 @@ function(fdmex,subject.indicator=NULL,fixedlist=NULL,bootstrapnum=1)
 		}
 	}
 	
-	sampledata = getsamples(fdmex,dat,estimates,bootstrapnum,T,subject.indicator,TRUE,'_simulateddata','.txt')
+	sampledata = getsamples(fdmex,dat,estimates,bootstrapnum,T,subject.indicator,TRUE,'_simdata','.txt')
 	
 	fdmout = new('fdmoutput')
 	fdmout@ID = subject.indicator
