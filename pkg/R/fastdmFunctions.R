@@ -320,45 +320,54 @@ getsamples <- function(fdmex,dat,estimatematrix,bootstraps=1,deterministic=F,sub
 		}
 		eval(parse(text=paste('samplen = sum(',paste(totselect,collapse=' & '),')',sep='')))
 		
-		bssample = array(NA,dim=c(samplen,2,bootstraps),dimnames=list(seq(1,samplen),c('correct','RT'),seq(1,bootstraps)))
-		
-		if(!deterministic) {
-			if(runfdm) {
-				outlog = system(paste('cd ',fdmex@datadir,'\n',fdmex@appdir,'/construct-samples ','-a',estimatematrix[cond,which(paramvec=='a')],' -z',estimatematrix[cond,which(paramvec=='zr')],' -v',estimatematrix[cond,which(paramvec=='v')],' -t',estimatematrix[cond,which(paramvec=='t0')],' -Z',estimatematrix[cond,which(paramvec=='szr')],' -V',estimatematrix[cond,which(paramvec=='sv')],' -T',estimatematrix[cond,which(paramvec=='st0')],' -n',samplen,' -r',' -N',bootstraps,' -o',path.expand(fdmex@datadir),'/',subID,'_cond',cond,sampledatname,'%d',sampledatext,sep=''),intern=FALSE)
-			}
+		if(samplen>0) {
+			#browser()
+			bssample = array(NA,dim=c(samplen,2,bootstraps),dimnames=list(seq(1,samplen),c('correct','RT'),seq(1,bootstraps)))
 			
-			for(bs in 1:bootstraps) {
-				fn=paste(fdmex@datadir,'/',subID,'_cond',cond,sampledatname,bs-1,sampledatext,sep='')
+			if(!deterministic) {
+				if(runfdm) {
+					outlog = system(paste('cd ',fdmex@datadir,'\n',fdmex@appdir,'/construct-samples ','-a',estimatematrix[cond,which(paramvec=='a')],' -z',estimatematrix[cond,which(paramvec=='zr')],' -v',estimatematrix[cond,which(paramvec=='v')],' -t',estimatematrix[cond,which(paramvec=='t0')],' -Z',estimatematrix[cond,which(paramvec=='szr')],' -V',estimatematrix[cond,which(paramvec=='sv')],' -T',estimatematrix[cond,which(paramvec=='st0')],' -n',samplen,' -r',' -N',bootstraps,' -o',path.expand(fdmex@datadir),'/',subID,'_cond',cond,sampledatname,'%d',sampledatext,sep=''),intern=FALSE)
+				}
 				
+				for(bs in 1:bootstraps) {
+					fn=paste(fdmex@datadir,'/',subID,'_cond',cond,sampledatname,bs-1,sampledatext,sep='')
+					
+					rbs = try(read.table(file=fn))
+					if(class(rbs)!='try-error') {
+						
+						bssample[,,bs] = as.matrix(rbs)
+						if(removeAfterUse) file.remove(fn)
+					} else {
+						cat('[fast-dm] BOOTSTRAP ERROR\n')
+					}
+					
+				}
+				
+				sampledat[[cond]] = bssample
+				
+				
+			} else {
+				bs = 1
+				if(runfdm) {
+					outlog = system(paste('cd ',fdmex@datadir,'\n',fdmex@appdir,'/construct-samples ','-a',estimatematrix[cond,which(paramvec=='a')],' -z',estimatematrix[cond,which(paramvec=='zr')],' -v',estimatematrix[cond,which(paramvec=='v')],' -t',estimatematrix[cond,which(paramvec=='t0')],' -Z',estimatematrix[cond,which(paramvec=='szr')],' -V',estimatematrix[cond,which(paramvec=='sv')],' -T',estimatematrix[cond,which(paramvec=='st0')],' -n',samplen,' -N',bootstraps,' -o',path.expand(fdmex@datadir),'/',subID,'_cond',cond,sampledatname,'%d',sampledatext,sep=''),intern=FALSE)
+				}
+				
+				fn = paste(fdmex@datadir,'/',subID,'_cond',cond,sampledatname,bs-1,sampledatext,sep='')
 				rbs = try(read.table(file=fn))
 				if(class(rbs)!='try-error') {
-					bssample[,,bs] = as.matrix(rbs)
-					if(removeAfterUse) file.remove(fn)
+					sampledat[[cond]] = as.matrix(rbs)
+					if(removeAfterUse) file.remove(fn)	
 				} else {
 					cat('[fast-dm] BOOTSTRAP ERROR\n')
 				}
 				
 			}
 			
-			sampledat[[cond]] = bssample
-			
-			
 		} else {
-			bs = 1
-			if(runfdm) {
-				outlog = system(paste('cd ',fdmex@datadir,'\n',fdmex@appdir,'/construct-samples ','-a',estimatematrix[cond,which(paramvec=='a')],' -z',estimatematrix[cond,which(paramvec=='zr')],' -v',estimatematrix[cond,which(paramvec=='v')],' -t',estimatematrix[cond,which(paramvec=='t0')],' -Z',estimatematrix[cond,which(paramvec=='szr')],' -V',estimatematrix[cond,which(paramvec=='sv')],' -T',estimatematrix[cond,which(paramvec=='st0')],' -n',samplen,' -N',bootstraps,' -o',path.expand(fdmex@datadir),'/',subID,'_cond',cond,sampledatname,'%d',sampledatext,sep=''),intern=FALSE)
-			}
 			
-			fn = paste(fdmex@datadir,'/',subID,'_cond',cond,sampledatname,bs-1,sampledatext,sep='')
-			rbs = try(read.table(file=fn))
-			if(class(rbs)!='try-error') {
-				sampledat[[cond]] = as.matrix(rbs)
-				if(removeAfterUse) file.remove(fn)	
-			} else {
-				cat('[fast-dm] BOOTSTRAP ERROR\n')
-			}
-			
+			sampledat[[cond]]=NA
 		}
+		
 		
 		
 	}
