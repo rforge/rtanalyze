@@ -43,7 +43,8 @@ export(
 	simulatesamples,
 	dmgui,
 	dmgui_example,
-	readFDM
+	readFDM,
+	fitEZdiff
 )
 
 exportPattern("^[\\.]")

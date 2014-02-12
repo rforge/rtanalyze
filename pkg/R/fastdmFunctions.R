@@ -575,3 +575,93 @@ link.fdmdata <- function(subjectdata,fdmdata,subjIDname='ppID')
 	
 	return(subjectdata)
 }
+
+
+fitEZdiff <- function(rtdat,which.condition) {
+	
+	if(missing(which.condition)) which.condition=NULL
+	
+	if(is.null(which.condition)) {
+		rtdat = overall(rtdat,TRUE)
+		which.condition = names(.rtdata.conditions(rtdat))[dim(.rtdata.conditions(rtdat))[2]]
+		remov = TRUE
+	} else remov = FALSE
+	
+	if(is.numeric(which.condition)) {
+		dat = data.frame(.rtdata.conditions(rtdat)[,which.condition]) 
+		names(dat) = which.condition
+		totlev = makelevels(names(.rtdata.conditions(rtdat)==which.condition),dat)
+		totmat = makeconditionarray(names(.rtdata.conditions(rtdat)==which.condition),totlev)
+		
+	} else {
+		dat = data.frame(.rtdata.conditions(rtdat)[,match(which.condition,names(.rtdata.conditions(rtdat)))])
+		names(dat) = which.condition
+		totlev = makelevels(which.condition,dat)
+		totmat = makeconditionarray(which.condition,totlev)
+	}	
+	
+	condnames = colnames(totmat)
+	
+	outdata = data.frame(v=rep(NA,dim(totmat)[1]),a=rep(NA,dim(totmat)[1]),t0=rep(NA,dim(totmat)[1]))
+	rownames(outdata) = rownames(totmat)
+	
+	for(cond in 1:dim(totmat)[1])	{
+		
+		#make selve empty
+		selvec = numeric(0)
+		
+		evstring = paste('selvec = which(rtdat@conditions$`',condnames[1],'`==\'',totmat[cond,1],'\'',sep='')
+		if(length(condnames)>1) {
+			for(i in 2:length(condnames)) {
+				evstring = paste(evstring,' & rtdat@conditions$`',condnames[i],'`==\'',totmat[cond,i],'\'',sep='') 
+			}
+		}
+		
+		evstring = paste(evstring,')',sep='')
+		eval(parse(text=evstring))
+		#selvec is now an object of the selected trials	
+		
+		rtvec = rtdat@rt[selvec][rtdat@valid[selvec]==TRUE]
+		cv = rtdat@correct[selvec][rtdat@valid[selvec]==TRUE & rtdat@correct[selvec]==TRUE]
+		
+		if(length(rtvec)>0) {
+			if(.rtdata.rt.units(rtdat)=='ms') rtvec = rtvec/1000
+			
+			mrt = mean(rtvec)
+			vrt = var(rtvec)
+			PC = sum(as.numeric(cv))/length(rtvec)
+			#browser()
+			if(PC==0 | PC==.5 | PC==1) {
+				cat('Percentage correct is 0, .5 or 1, EZ will not work','\n')
+				outdata[cond,] = c(NA,NA,NA) 
+			} else {
+			
+				#calculate EZ parameters
+				s=.1
+				s2=s^2
+					
+				L = qlogis(PC)
+				x = L*(L*PC^2 - L*PC + PC - 0.5)/vrt
+				
+				#drift
+				v = sign(PC-0.5)*s*x^(1/4)		
+				
+				#bsep
+				a = s2*qlogis(PC)/v
+				
+				#nondec
+				y   = -v*a/s2
+				MDT = (a/(2*v))*(1-exp(y))/(1+exp(y))
+				t0 = mrt-MDT
+					
+				outdata[cond,] = c(v,a,t0)
+				
+			}
+		} else {
+			outdata[cond,] = c(NA,NA,NA)
+		}
+	}
+		
+	return(outdata)
+	
+}
