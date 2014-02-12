@@ -378,31 +378,13 @@ getsamples <- function(fdmex,dat,estimatematrix,bootstraps=1,deterministic=F,sub
 simulatesamples <- 
 function(fdmdata,fixedlist=NULL,bootstrapnum=1) 
 {
-	##CHANGE TO WORK WITH FDMDATA
+	#load in data, estimates, and fdm options
+	dat = fdmdata@data
+	estimates = fdmdata@estimates
+	fdmex = fdmdata@fdmex
+	subject.indicator = fdd@ID
 	
-	#set datname
-	#sp = strsplit(fdmex@dataname,'\\*')
-	#datname = paste(sp[[1]][1],subject.indicator,sp[[1]][2],sep='')
-	#sp = strsplit(fdmex@outputname,'\\*')
-	#outname = paste(sp[[1]][1],subject.indicator,sp[[1]][2],sep='')
-	
-	#format the outputparameters
-	#dat = read.table(paste(fdmex@datadir,'/',datname,sep=''),header=F)
-	#names(dat) = fdmex@format
-	#out = read.table(paste(fdmex@datadir,'/',outname,sep=''),header=F)
-	#out = out[,-2]
-	#outframe = data.frame(t(out[,2]))
-	#names(outframe) = out[,1]
-	browser()
-	
-	
-	
-	
-	#get all estimates in the right order and estimate forward data	
-	dependent = getdepends(fdmex,dat,out)		
-	estimates = getestimates(fdmex,out,dependent$outmat,dependent$levelmat)		
-	
-	#run through the fixedlist (named list [1]=parameter, [2]=condition, [3]=value)
+	#run through the fixedlist (named list [1]=parameter, [2]=condition, [3]=value), eg. list(c('a','switch',0.984),c('v','switch',2.34))
 	if(!is.null(fixedlist)) {
 		for(i in 1:length(fixedlist)) {
 			row = grep(paste('\\<',fixedlist[[i]][2],'\\>',sep=''),dimnames(estimates)[[1]])
@@ -418,7 +400,7 @@ function(fdmdata,fixedlist=NULL,bootstrapnum=1)
 	fdmout@ID = subject.indicator
 	fdmout@fdmex = fdmex
 	fdmout@data = dat
-	fdmout@parameters = t(outframe)
+	fdmout@parameters = fdmdata@parameters
 	fdmout@estimates = estimates
 	fdmout@bootstrapdata = sampledata
 	
