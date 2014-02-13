@@ -647,3 +647,25 @@ fitEZdiff <- function(rtdat,which.condition) {
 	return(outdata)
 	
 }
+
+
+constructsample <- function(v,a,t0,zr,szr,sv,st0,samplen,fdmdata,removeAfterUse=T) 
+#wrapper for constructsample routine of fast-dm (more direct than getsamples/simulatesamples)
+{
+	fdmex = fdmdata@fdmex
+	
+	outlog = system(paste('cd ',fdmex@datadir,'\n',fdmex@appdir,'/construct-samples ','-a',a,' -z',zr,' -v',v,' -t',t0,' -Z',szr,' -V',sv,' -T',st0,' -n',samplen,' -N',1,' -o',path.expand(fdmex@datadir),'/','constsample.txt',sep=''),intern=FALSE)
+	
+	if(file.exists(paste(path.expand(fdmex@datadir),'/','constsample.txt',sep=''))) {
+		dat = read.table(paste(path.expand(fdmex@datadir),'/','constsample.txt',sep=''))
+		
+		if(removeAfterUse) {
+			file.remove(paste(path.expand(fdmex@datadir),'/','constsample.txt',sep=''))
+		}
+	} else {
+		dat = NULL
+	}
+	 
+		
+	return(dat)
+}
