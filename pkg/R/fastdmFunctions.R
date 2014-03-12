@@ -459,19 +459,23 @@ summarize.diffmod <- function(subjectdata)
 	summary.dif = numeric(0)
 	
 	for(i in 1:length(subs)) {
+	
+		cc = try(.subjects.fdmdata(subjectdata)[[subs[i]]],silen=T)
 		
-		if(!is.null(.subjects.fdmdata(subjectdata)[[subs[i]]])) {
-			sumdif = .fdmoutput.estimates(.subjects.fdmdata(subjectdata)[[subs[i]]])
-		
-			sdat = .subjects.variables(subjectdata)[subs[i],]
-			if(nrow(sumdif)>1) {
-				for(j in 2:nrow(sumdif)) {
-					sdat = rbind(sdat,.subjects.variables(subjectdata)[subs[i],])
-				}
-			}
+		if(class(cc)!='try-error') {
+			if(!is.null(.subjects.fdmdata(subjectdata)[[subs[i]]])) {
+				sumdif = .fdmoutput.estimates(.subjects.fdmdata(subjectdata)[[subs[i]]])
 			
-			sdat = cbind(sdat,sumdif)
-			summary.dif = rbind(summary.dif,sdat)
+				sdat = .subjects.variables(subjectdata)[subs[i],]
+				if(nrow(sumdif)>1) {
+					for(j in 2:nrow(sumdif)) {
+						sdat = rbind(sdat,.subjects.variables(subjectdata)[subs[i],])
+					}
+				}
+				
+				sdat = cbind(sdat,sumdif)
+				summary.dif = rbind(summary.dif,sdat)
+			}
 		}
 	
 	}
