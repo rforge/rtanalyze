@@ -288,7 +288,7 @@ function(rtdat,which.condition=NULL,method.min=c('abs','sd','ewma'),method.max=c
 		.outlier.selection.total(outlier) = length(rtvec[validvec==TRUE])
 		.outlier.selection.vector(outlier) = selvec[validvec==TRUE]
 		.outlier.ewma.stats(outlier) = ewmastat
-		.outlier.remark(outlier) = paste(' [',rownames(totmat)[cond],'] removed ',.outlier.rem.total(outlier),' out of ',length(rtvec[validvec==TRUE]),' (',round(.outlier.rem.total(outlier) / length(rtvec[validvec==TRUE]),3),')',sep='')
+		.outlier.remark(outlier) = paste(' [',rownames(totmat)[cond],'] {',round(rtmin,3),'/',round(rtmax,3),'} removed ',.outlier.rem.total(outlier),' out of ',length(rtvec[validvec==TRUE]),' (',round(.outlier.rem.total(outlier) / length(rtvec[validvec==TRUE]),3),')',sep='')
 		
 		.rtdata.outliers(rtdat) = c(.rtdata.outliers(rtdat),outlier)
 			
@@ -604,3 +604,5 @@ showLevels <- function(rtdat,which.condition) {
 	return(totmat)
 	
 }
+
+
