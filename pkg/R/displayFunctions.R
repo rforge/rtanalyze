@@ -13,7 +13,7 @@
 dmgui <- function(sdat) 
 {
 	#load and make toplevel
-	library(tcltk)
+	#library(tcltk)
 	tt <- tktoplevel()
 	tktitle(tt) <- paste('rtanalyze Diffusion Model Analysis (using fast-DM)',sep='')
 	#tkgrid(tklabel(tt,text=paste('Loaded experiment:',.subjects.experimentname(sdat),'\n')),sticky='nw',columnspan=7)
@@ -107,7 +107,7 @@ dmgui <- function(sdat)
 
 dmgui_example <- function() 
 {
-	library(tcltk)
+	#library(tcltk)
 	
 	tt <- tktoplevel()
 	tktitle(tt) <- paste('COOL',sep='')

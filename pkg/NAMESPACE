@@ -45,7 +45,9 @@ export(
 	dmgui_example,
 	readFDM,
 	fitEZdiff,
-	constructsample
+	constructsample,
+	spotdiff_test,
+	spotdiff
 )
 
 exportPattern("^[\\.]")
@@ -69,4 +71,9 @@ exportMethods(
 import(
 	methods,
 	graphics
+)
+
+useDynLib(
+	rtanalyze,
+	spotdiffusion	
 )

@@ -5,9 +5,9 @@ Version: 1.2-24
 Date:  2014-06-20
 Author: Wouter D. Weeda
 Maintainer: Wouter D. Weeda <w.d.weeda@gmail.com>
-Depends: R (>= 2.12.0), methods, graphics, tcltk
+Depends: R (>= 2.12.0), methods, graphics
 Description: RTanalyze, stores reaction time data and contains tools for RT analysis. 
 URL: http://rtanalyze.r-forge.r-project.org/
 License: GPL-2
 LazyLoad: yes
-Packaged: Fri 20 Jun 16:54:50 2014
+Packaged: Wed 19 Nov 16:54:50 2014

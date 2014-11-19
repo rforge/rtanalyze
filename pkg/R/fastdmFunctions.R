@@ -615,9 +615,9 @@ fitEZdiff <- function(rtdat,which.condition) {
 			mrt = mean(rtvec)
 			vrt = var(rtvec)
 			PC = sum(as.numeric(cv))/length(rtvec)
+			
 			#browser()
 			if(PC==0 | PC==.5 | PC==1) {
-				cat('Percentage correct is 0, .5 or 1, EZ will not work','\n')
 				outdata[cond,] = c(NA,NA,NA) 
 			} else {
 			
@@ -671,4 +671,27 @@ constructsample <- function(v,a,t0,d,zr,szr,sv,st0,samplen,fdmdata,removeAfterUs
 	 
 		
 	return(dat)
+}
+
+spotdiff_test <- function() 
+{
+	#spotdiffusion(			double *a, 		double *t0, 	double *P, 	double *sda, 	double *rd, 	double *st0, double *sz, double *eta, double *cond, 	int *ntrials, 		int *maxstep, double *RTerr, double *RTcorr)
+	out = .C('spotdiffusion',as.double(.9),as.double(.1),as.double(.2),as.double(.2),as.double(.2),as.double(0),as.double(0),as.double(0),as.double(1),as.integer(50000),as.integer(1500),as.double(vector('numeric',50000)),as.double(vector('numeric',50000)))
+	browser()
+}
+
+
+spotdiff <- function(a,ter,P,sda,rd,fl_cond,ster=0,sz=0,eta=0,ntrials=50000,maxstep=1500)
+{
+	#spotdiffusion(			double *a, 		double *t0, 	double *P, 	double *sda, 	double *rd, 	double *st0, double *sz, double *eta, double *cond, 	int *ntrials, 		int *maxstep, double *RTerr, double *RTcorr)
+	out = .C('spotdiffusion',as.double(a),as.double(ter),as.double(P),as.double(sda),as.double(rd),as.double(fl_cond),as.double(ster),as.double(sz),as.double(eta),as.integer(ntrials),as.integer(maxstep),as.double(vector('numeric',ntrials)),as.double(vector('numeric',ntrials)))
+	
+	RTerr = out[[12]]
+	RTcorr = out[[13]]
+	
+	RTerr=RTerr[-which(RTerr==0)]
+	RTcorr=RTcorr[-which(RTcorr==0)]
+	
+	return(list(TRcorrect=RTcorr,TRerror=RTerr))
+	
 }
