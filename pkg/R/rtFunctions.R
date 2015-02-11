@@ -65,8 +65,9 @@ function(subject,which.within=NULL,FUN,useCorrect='true',which.between=numeric(0
 	
 }
 
+#wrappers for subjects analysis
 summarize <- function(...) summarize.subjects(...)
-	
+summary.subjects <- function(...) summarize.subjects(...)
 
 
 long2wide <- function(dframe,ID,indicators) 
