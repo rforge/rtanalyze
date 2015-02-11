@@ -606,3 +606,64 @@ showLevels <- function(rtdat,which.condition) {
 }
 
 
+
+runOutliers <- function(subject,FUN,...) 
+#perform outlier analysis over all valid subjects
+{
+	fn = as.character(match.call()$FUN)
+	
+	#get valid subjects
+	whichsubjects = which(.subjects.valid(subject)==TRUE)
+	
+	for(i in 1:length(whichsubjects)) {
+		
+		rtdat = .subjects.rtdata(subject)[[whichsubjects[i]]]
+		eval(parse(text=paste('rtdat <- ',fn,'(rtdat,...)',sep='' )))		
+		
+		.subjects.rtdata(subject)[[whichsubjects[i]]] <- rtdat
+		
+	}
+	
+	return(subject)
+	
+} 
+
+summarizeOutliers <- function(subject,add.bsvar=TRUE) 
+#summarize al outliers
+{
+	#get valid subjects
+	whichsubjects = which(.subjects.valid(subject)==TRUE)
+
+	dframe = numeric(0)
+	ft = TRUE
+	nms = numeric(0)
+	
+	for(i in 1:length(whichsubjects)) {
+		
+		rtdat = .subjects.rtdata(subject)[[whichsubjects[i]]]
+		
+		ol = .rtdata.outliers(rtdat)
+		nlen = length(ol)
+		
+		dvec = numeric(0)
+		
+		if(nlen>0) {
+			for(j in 1:nlen) {
+				dvec = c(dvec,.outlier.rem.prop(ol[[j]])) 
+				if(ft) {nms = c(nms,.outlier.type(ol[[j]]))}
+			}
+			dframe = rbind(dframe,dvec)
+			ft =FALSE
+		}
+	}
+	#browser()
+	dimnames(dframe)[[1]]=1:nrow(dframe)
+	dimnames(dframe)[[2]]=nms
+	
+	dframe = as.data.frame(dframe) 
+	
+	if(add.bsvar) dframe = cbind(dframe,.subjects.variables(subject)[whichsubjects,])
+	
+	return(dframe)
+	
+}

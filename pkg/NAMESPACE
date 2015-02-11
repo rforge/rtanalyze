@@ -47,7 +47,9 @@ export(
 	fitEZdiff,
 	constructsample,
 	spotdiff_test,
-	spotdiff
+	spotdiff,
+	runOutliers,
+	summarizeOutliers
 )
 
 exportPattern("^[\\.]")
