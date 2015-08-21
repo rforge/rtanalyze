@@ -36,24 +36,32 @@ function(subject,which.within=NULL,FUN,useCorrect='true',which.between=numeric(0
 	#make aggregates for all subjects
 	for(i in 1:length(whichsubjects)) {
 		
+	  err = FALSE
+	  
 		if(length(PCcall)>0) {
-			summary.rtdata = pc(.subjects.rtdata(subject)[[whichsubjects[i]]],which.within,TRUE)
+			tempsum = try(pc(.subjects.rtdata(subject)[[whichsubjects[i]]],which.within,TRUE))
+		  if(class(tempsum)!='try-error') summary.rtdata = tempsum else err=TRUE
 		} else {
-			summary.rtdata = aggregate.rtdata(.subjects.rtdata(subject)[[whichsubjects[i]]],which.within,FUN,useCorrect=useCorrect)
+			tempsum = try(aggregate.rtdata(.subjects.rtdata(subject)[[whichsubjects[i]]],which.within,FUN,useCorrect=useCorrect))
+			if(class(tempsum)!='try-error') summary.rtdata = tempsum else err=TRUE
 		}
 		
-		#get subject variables
-		sdat = .subjects.variables(subject)[whichsubjects[i],]
-		if(nrow(summary.rtdata)>1) {
-			for(j in 2:nrow(summary.rtdata)) {
-				sdat = rbind(sdat,.subjects.variables(subject)[whichsubjects[i],])
-			}
-		}
-	
-		#add value
-		sdat = cbind(sdat,summary.rtdata)
-		summary.subject = rbind(summary.subject,sdat)
-		
+	  if(!err) {
+  		#get subject variables
+  		sdat = .subjects.variables(subject)[whichsubjects[i],]
+  		if(nrow(summary.rtdata)>1) {
+  			for(j in 2:nrow(summary.rtdata)) {
+  				sdat = rbind(sdat,.subjects.variables(subject)[whichsubjects[i],])
+  			}
+  		}
+  	
+  		#add value
+  		sdat = cbind(sdat,summary.rtdata)
+  		summary.subject = rbind(summary.subject,sdat)
+	  } else {
+	    warning(paste0('Error in aggregate for subject ',whichsubjects[i],'. Data is not in summary. Please check rtdata object.'))
+	  }
+	  
 	}
 	
 	#set new names

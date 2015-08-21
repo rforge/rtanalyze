@@ -1,6 +1,6 @@
 #############################################
 # RTanalyze S4 CLASS DEFINITIONS			#
-# Copyright(c) 2011 Wouter D. Weeda			#
+# Copyright(c) 2015 Wouter D. Weeda			#
 # University of Amsterdam					#
 #############################################
 
@@ -24,8 +24,8 @@ setClass(
 	prototype=prototype(
 		version=1,
 		build=2,
-		update=26,
-		svnrev=57
+		update=27,
+		svnrev=58
 	)#,
 	#package='RTanalyze'
 )
